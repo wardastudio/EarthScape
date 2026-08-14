@@ -234,12 +234,7 @@ def init_db() -> None:
 init_db()
 
 
-# ===== FIX GUEST NAME =====
-with sqlite3.connect(DB_PATH) as conn:
-    conn.execute(
-        "UPDATE users SET name = 'Public Guest Viewer' WHERE email = 'guest@earthscape.org' AND name != 'Public Guest Viewer'"
-    )
-    conn.commit()
+
 
 
 # ===== Helper functions =====
