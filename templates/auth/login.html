@@ -1,0 +1,259 @@
+{% extends 'layouts/base.html' %}
+{% set hide_sidebar = False %}
+{% set hide_sidebar = True %}
+{% set hide_navbar = False %}
+{% set hide_footer = False %}
+{% set is_auth = True %}
+
+{% block title %}Sign In | EarthScape Climate Agency{% endblock %}
+
+{% block content %}
+<style>
+.auth-wrapper {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+.auth-brand {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+}
+.auth-brand-name {
+    font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #f8fafc;
+}
+.auth-brand-sub {
+    font-family: var(--font-serif-italic, 'Playfair Display', serif);
+    font-size: 0.82rem;
+    font-style: italic;
+    color: #a8b8a0;
+    margin-top: 2px;
+}
+.auth-card {
+    background: rgba(8, 12, 20, 0.82);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 2.25rem 2rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.auth-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 0.35rem;
+    letter-spacing: -0.01em;
+}
+.auth-subtitle {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin-bottom: 1.75rem;
+}
+.auth-label {
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: #cbd5e1;
+    margin-bottom: 0.4rem;
+}
+.auth-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.auth-input {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 10px !important;
+    color: #f8fafc !important;
+    padding: 0.7rem 0.9rem !important;
+    font-size: 0.92rem !important;
+    transition: all 0.2s ease !important;
+}
+.auth-input:focus {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+    outline: none !important;
+}
+.auth-input::placeholder {
+    color: #64748b !important;
+}
+.password-toggle-btn {
+    position: absolute;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 0.25rem;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+.password-toggle-btn:hover {
+    color: #f8fafc;
+}
+.auth-btn-primary {
+    width: 100%;
+    background: var(--accent-lime);
+    border: 1px solid var(--accent-lime);
+    border-radius: 9999px;
+    color: #05080d;
+    font-weight: 700;
+    padding: 0.8rem 1.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.01em;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 18px rgba(163, 230, 53, 0.18);
+}
+.auth-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(163, 230, 53, 0.28);
+}
+.auth-link {
+    color: var(--accent-cyan);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.auth-link:hover {
+    color: #7dd3fc;
+    text-decoration: underline;
+}
+.auth-check-label {
+    font-size: 0.83rem;
+    color: #94a3b8;
+    cursor: pointer;
+}
+.auth-check-input {
+    accent-color: #10b981;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.auth-footer-text {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 1.5rem;
+}
+.home-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #64748b;
+    font-size: 0.84rem;
+    text-decoration: none;
+    margin-top: 1.5rem;
+    transition: color 0.2s;
+}
+.home-back-link:hover {
+    color: #cbd5e1;
+}
+</style>
+
+<div class="row justify-content-center w-100 mx-0">
+    <div class="auth-wrapper">
+        
+        <!-- Brand Header -->
+        <div class="text-center mb-4">
+            <a href="/" class="auth-brand">
+                <span class="auth-brand-name">EARTHSCAPE</span>
+                <span class="auth-brand-sub">Climate Intelligence Platform</span>
+            </a>
+        </div>
+
+        <!-- Auth Card -->
+        <div class="auth-card">
+            <div class="text-center">
+                <h1 class="auth-title">Sign in</h1>
+                <p class="auth-subtitle">Access your EarthScape workspace</p>
+            </div>
+            
+            <form action="/login" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                {% if success_message %}
+                <div class="alert py-2 px-3 small mb-3 border-0 rounded-3" style="background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3) !important;">
+                    {{ success_message }}
+                </div>
+                {% endif %}
+                
+                {% if error_message %}
+                <div class="alert py-2 px-3 small mb-3 border-0 rounded-3" style="background: rgba(244, 63, 94, 0.15); color: #fca5a5; border: 1px solid rgba(244, 63, 94, 0.3) !important;">
+                    {{ error_message }}
+                </div>
+                {% endif %}
+
+                <!-- Email address -->
+                <div class="mb-3">
+                    <label for="email" class="form-label auth-label">Email address</label>
+                    <input type="email" id="email" name="email" class="form-control auth-input" placeholder="name@company.com" required autofocus>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="password" class="form-label auth-label mb-0">Password</label>
+                        <a href="/forgot-password" class="auth-link small" style="font-size: 0.8rem;">Forgot password?</a>
+                    </div>
+                    <div class="auth-input-group">
+                        <input type="password" id="password" name="password" class="form-control auth-input pe-5" placeholder="••••••••" required>
+                        <button type="button" class="password-toggle-btn" onclick="togglePassword('password', this)" aria-label="Toggle password visibility">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember me -->
+                <div class="mb-4 form-check text-start">
+                    <input type="checkbox" class="form-check-input auth-check-input" id="remember">
+                    <label class="form-check-label auth-check-label ms-1" for="remember">Remember me</label>
+                </div>
+
+                <!-- Sign in button -->
+                <button type="submit" class="auth-btn-primary">
+                    Sign in
+                </button>
+            </form>
+
+            <!-- Bottom redirect link -->
+            <div class="auth-footer-text">
+                Don't have an account?
+                <a href="/register" class="auth-link ms-1">Create an account</a>
+            </div>
+        </div>
+        
+        <!-- Back link -->
+        <div class="text-center">
+            <a href="/" class="home-back-link">
+                <i class="bi bi-arrow-left"></i> Return to home page
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+}
+</script>
+{% endblock %}

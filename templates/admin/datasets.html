@@ -1,0 +1,99 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Dataset Management | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-accent-blue text-decoration-none">Admin Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Dataset Management</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4" data-aos="fade-up">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h3 class="text-white m-0"><i class="bi bi-folder-fill me-2 text-accent-blue"></i>Ingested Datasets</h3>
+            <p class="text-secondary small m-0">Validate telemetry files, review spatial resolution properties, and approve imports.</p>
+        </div>
+        <a href="/admin/datasets/upload" class="btn btn-glass-success"><i class="bi bi-upload me-1"></i> Ingest New Dataset</a>
+    </div>
+
+    <!-- Search/Filter panel -->
+    <form action="{{ url_for('admin_datasets') }}" method="GET" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text input-group-text-glass border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" value="{{ query|default('') }}" class="form-control form-control-glass border-start-0" placeholder="Filter by ID, name, or source...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="format" class="form-control-glass">
+                <option value="">All File Formats</option>
+                <option value="CSV" {% if file_format == 'CSV' %}selected{% endif %}>CSV</option>
+                <option value="XLSX" {% if file_format == 'XLSX' %}selected{% endif %}>XLSX</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-control-glass">
+                <option value="">All Statuses</option>
+                <option value="Approved" {% if status == 'Approved' %}selected{% endif %}>Approved</option>
+                <option value="Pending Review" {% if status == 'Pending Review' %}selected{% endif %}>Pending Review</option>
+                <option value="Rejected" {% if status == 'Rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+        </div>
+        <div class="col-md-2 text-end">
+            <button type="submit" class="btn btn-glass-secondary w-100"><i class="bi bi-funnel"></i> Filter</button>
+        </div>
+    </form>
+
+    <!-- Datasets table -->
+    <div class="glass-card p-4">
+        <div class="table-responsive">
+            <table class="table table-glass">
+                <thead>
+                    <tr>
+                        <th>Dataset Identifier &amp; Name</th>
+                        <th>Grid Resolution</th>
+                        <th>File Properties</th>
+                        <th>Status</th>
+                        <th>Controls</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ds in datasets %}
+                    <tr>
+                        <td>
+                            <strong>{{ ds.name }}</strong><br>
+                            <small class="text-muted">{{ ds.id }} | Uploaded: {{ ds.date }}</small>
+                        </td>
+                        <td>{{ ds.resolution }}</td>
+                        <td>
+                            {{ ds.size }}<br>
+                            <small class="text-muted">{{ ds.format }} structure</small>
+                        </td>
+                        <td>
+                            <span class="badge-status {% if ds.status == 'Approved' %}approved{% elif ds.status == 'Pending Review' %}pending{% else %}rejected{% endif %}">
+                                {{ ds.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin_dataset_approval') }}" class="btn btn-sm btn-outline-lime">Review</a>
+                            <a href="{{ url_for('delete_dataset', dataset_id=ds.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this dataset?')">Delete</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No datasets found. Upload one to get started.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

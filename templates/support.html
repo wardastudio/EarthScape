@@ -1,0 +1,69 @@
+{% extends 'layouts/base.html' %}
+{% set hide_sidebar = True %}
+
+{% block title %}Support Center | Earthscape Climate Agency{% endblock %}
+
+{% block content %}
+<div class="container py-5" data-aos="fade-up">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <span class="badge bg-glass-success text-accent-green mb-3 px-3 py-2 border border-success-subtle">AGENCY SUPPORT</span>
+        <h1 class="display-4 fw-bold text-white">Support & Service Portal</h1>
+        <p class="text-secondary max-width-text mx-auto" style="max-width: 600px;">File tickets regarding database ingestion bugs, model run interruptions, or telemetry sync resets.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Submit ticket form -->
+        <div class="col-lg-5">
+            <div class="glass-card p-4">
+                <h5 class="text-white mb-3"><i class="bi bi-ticket-perforated me-2 text-accent-blue"></i>Open Technical Ticket</h5>
+                
+                <form action="#" method="POST" onsubmit="event.preventDefault(); window.showClimateToast('Support ticket filed successfully.', 'success');">
+                    <div class="mb-3">
+                        <label class="form-label form-label-custom">Problem Subject</label>
+                        <input type="text" class="form-control form-control-glass" placeholder="Buoy Node-42 telemetry lag" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label form-label-custom">System Component</label>
+                        <select class="form-control form-control-glass">
+                            <option>Telemetry Ingestion Pipelines</option>
+                            <option>Predictive Models (GPU clusters)</option>
+                            <option>GIS Web maps rendering</option>
+                            <option>Account Credentials / SSH Keys</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label form-label-custom">Description</label>
+                        <textarea class="form-control form-control-glass" rows="4" placeholder="Detail any stack trace or sensor coordinates..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-glass-primary w-100">Submit Ticket</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active tickets tracker -->
+        <div class="col-lg-7">
+            <div class="glass-card p-4 h-100">
+                <h5 class="text-white mb-4"><i class="bi bi-journal-check me-2 text-accent-green"></i>Active Support Tickets</h5>
+                
+                <div class="d-flex flex-column gap-3">
+                    <div class="p-3 rounded border border-secondary bg-secondary bg-opacity-10 d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold text-white">Svalbard Receiver uplink connection reset</div>
+                            <small class="text-muted">Ticket ID: #TK-98234 | Filed: 4 hours ago</small>
+                        </div>
+                        <span class="badge bg-warning text-dark rounded-pill">Investigating</span>
+                    </div>
+                    <div class="p-3 rounded border border-secondary bg-secondary bg-opacity-10 d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold text-white">Vision Transformer prediction training loop failed</div>
+                            <small class="text-muted">Ticket ID: #TK-98012 | Filed: 2 days ago</small>
+                        </div>
+                        <span class="badge bg-success rounded-pill">Resolved</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

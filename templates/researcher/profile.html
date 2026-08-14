@@ -1,0 +1,90 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}My Profile | EarthScape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/researcher/dashboard" class="text-accent-blue text-decoration-none">Researcher Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Researcher Profile</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4" data-aos="fade-up">
+
+    <!-- Profile Card -->
+    <div class="col-lg-5">
+        <div class="glass-card p-5 text-center h-100">
+            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3 fw-bold"
+                style="width: 100px; height: 100px; font-size: 2.5rem; border: 3px solid var(--accent-lime);">
+                {{ user.avatar }}
+            </div>
+            <h4 class="text-white mb-1">{{ user.name }}</h4>
+            <p class="text-accent-lime mb-4">Research Scientist</p>
+
+            <div class="border-top border-secondary pt-4 text-start">
+                <div class="mb-3">
+                    <span class="text-secondary small d-block">Official Email</span>
+                    <span class="text-white fw-semibold">{{ user.email }}</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-secondary small d-block">Research Division</span>
+                    <span class="text-white fw-semibold">Climate Systems & Earth Observation</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-secondary small d-block">Access Level</span>
+                    <span class="text-accent-lime small"><i class="bi bi-shield-check me-1"></i> Read-Only / View Trends</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-secondary small d-block">Status</span>
+                    <span class="text-white fw-semibold">{{ user.status or 'Active' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Research Activity Timeline -->
+    <div class="col-lg-7">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-4"><i class="bi bi-clock-history me-2 text-accent-lime"></i>Recent Research Activity</h5>
+
+            <div class="timeline-classic">
+                <div class="timeline-item">
+                    <div class="timeline-dot green"></div>
+                    <div class="glass-card p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="text-white m-0">Reviewed Arctic Sea Ice Extent dataset</h6>
+                            <span class="text-muted small">Today, 09:42</span>
+                        </div>
+                        <p class="text-secondary small m-0 mt-1">Analyzed multi-decadal sea ice coverage trends under CMIP6 scenarios. Flagged 3 anomalous records.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="glass-card p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="text-white m-0">Accessed Climate Trends dashboard</h6>
+                            <span class="text-muted small">Yesterday, 15:30</span>
+                        </div>
+                        <p class="text-secondary small m-0 mt-1">Reviewed temperature anomaly charts and rainfall forecast projections for South Asian monsoon corridor.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot yellow"></div>
+                    <div class="glass-card p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="text-white m-0">Submitted dataset review request</h6>
+                            <span class="text-muted small">3 days ago</span>
+                        </div>
+                        <p class="text-secondary small m-0 mt-1">Requested admin approval for Amazon Basin Soil Moisture dataset (14.2 GB). Status: Pending Review.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

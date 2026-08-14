@@ -1,0 +1,24 @@
+{% extends 'layouts/base.html' %}
+{% set hide_sidebar = True %}
+{% set is_auth = True %}
+{% set hide_footer = True %}
+
+{% block title %}Unauthorized Access | Earthscape Climate Agency{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center w-100 mx-0">
+    <div class="col-md-8 col-lg-6 text-center" data-aos="zoom-in">
+        <div class="glass-card p-5 shadow-lg border border-danger-subtle">
+            <div class="display-1 text-danger mb-4"><i class="bi bi-shield-slash"></i></div>
+            <h1 class="text-white mb-3">Access Restrictions Active</h1>
+            <p class="text-secondary mb-4 fs-5">
+                Your credentials are not mapped to access this administration node. This security incident has been logged along with your target IP address.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="/login" class="btn btn-glass-primary px-4 py-2">Re-Authorize Account</a>
+                <a href="/" class="btn btn-glass-secondary px-4 py-2">Return to Safety</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

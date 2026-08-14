@@ -1,0 +1,73 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}My Profile | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/analyst/dashboard" class="text-accent-blue text-decoration-none">Analyst Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Analyst Profile</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4" data-aos="fade-up">
+    <!-- Profile Card -->
+    <div class="col-lg-5">
+        <div class="glass-card p-5 text-center h-100">
+            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3 fw-bold" style="width: 100px; height: 100px; font-size: 2.5rem; border: 3px solid var(--accent-blue);">
+                {{ user.avatar }}
+            </div>
+            <h4 class="text-white mb-1">{{ user.name }}</h4>
+            <p class="text-accent-blue mb-4">{{ user.role }}</p>
+            
+            <div class="border-top border-secondary pt-4 text-start">
+                <div class="mb-3">
+                    <span class="text-secondary small d-block">Official Email</span>
+                    <span class="text-white fw-semibold">{{ user.email }}</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-secondary small d-block">Research Division</span>
+                    <span class="text-white fw-semibold">Satellite Remote Sensing (SRS)</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-secondary small d-block">Authorized Scopes</span>
+                    <span class="text-accent-green small"><i class="bi bi-shield-check me-1"></i> Read-Write / Run Models</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modeling history -->
+    <div class="col-lg-7">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-4"><i class="bi bi-clock-history me-2 text-accent-green"></i>Model Execution History</h5>
+            
+            <div class="timeline-classic">
+                <div class="timeline-item">
+                    <div class="timeline-dot green"></div>
+                    <div class="glass-card p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="text-white m-0">Triggered Polar Ice Runoff forecast run</h6>
+                            <span class="text-muted small">Today, 00:10</span>
+                        </div>
+                        <p class="text-secondary small m-0 mt-1">Calculated 50-year glacial runoff rates under RCP 8.5 pathways. Completion status: 100%.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="glass-card p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="text-white m-0">Uploaded Amazon Canopy dataset</h6>
+                            <span class="text-muted small">2 days ago</span>
+                        </div>
+                        <p class="text-secondary small m-0 mt-1">Uploaded 12.8 GB GeoTIFF folder. Validation check: Passed. Sent for admin verification.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

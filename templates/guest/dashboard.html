@@ -1,0 +1,130 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Guest Dashboard | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Guest Dashboard</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4" data-aos="fade-up">
+    <div class="col-12">
+        <div class="glass-card p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="text-white mb-1"><i class="bi bi-journal-medical text-accent-blue me-2"></i>Public Climate Information</h4>
+                <p class="text-secondary mb-0">Explore public climate trends, maps, and alerts. (Public Access Mode)</p>
+            </div>
+            <div>
+                <span class="badge bg-glass-success text-accent-green border-dashed py-2 px-3"><i class="bi bi-shield-check me-1"></i>Secure Guest Credentials</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4" data-aos="fade-up" id="unified-stats-cards">
+    <div class="col-6 col-md-3">
+        <div class="glass-card p-3 text-center">
+            <div class="text-accent-blue small mb-1"><i class="bi bi-thermometer-half"></i> Avg Temperature</div>
+            <div class="h3 text-white mb-0">{{ stats.get('average_temperature', stats.get('avg_temperature', '--')) }}°C</div>
+            <div class="text-muted small">Global sensors</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="glass-card p-3 text-center">
+            <div class="text-accent-green small mb-1"><i class="bi bi-droplet-half"></i> Avg Humidity</div>
+            <div class="h3 text-white mb-0">{{ stats.get('avg_humidity', stats.get('average_humidity', '--')) }}%</div>
+            <div class="text-muted small">Global sensors</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="glass-card p-3 text-center">
+            <div class="text-warning small mb-1"><i class="bi bi-cloud-rain"></i> Avg Rainfall</div>
+            <div class="h3 text-white mb-0">{{ stats.get('avg_rainfall', stats.get('average_rainfall', '--')) }} mm</div>
+            <div class="text-muted small">Global sensors</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="glass-card p-3 text-center">
+            <div class="text-info small mb-1"><i class="bi bi-wind"></i> Avg Wind Speed</div>
+            <div class="h3 text-white mb-0">{{ stats.get('avg_wind_speed', stats.get('average_wind_speed', '--')) }} km/h</div>
+            <div class="text-muted small">Global sensors</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-4"><i class="bi bi-compass-fill text-accent-blue me-2"></i>Public Climate Portal</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="p-3 rounded border border-secondary bg-dark bg-opacity-20 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <h6 class="text-white"><i class="bi bi-map-fill me-2 text-accent-green"></i>GIS Maps</h6>
+                            <p class="text-secondary small">Analyze spatial climate anomalies, temperature gradients, and environmental sensors globally.</p>
+                        </div>
+                        <a href="/maps/world" class="btn btn-sm btn-glass-secondary mt-2 align-self-start">Launch Map Portal</a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded border border-secondary bg-dark bg-opacity-20 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <h6 class="text-white"><i class="bi bi-clock-history me-2 text-warning"></i>Climate Trends</h6>
+                            <p class="text-secondary small">Compare historical sensor logs against predicted future anomalies in our timeline visualizer.</p>
+                        </div>
+                        <a href="/about" class="btn btn-sm btn-glass-secondary mt-2 align-self-start">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+                <h5 class="text-white mb-3"><i class="bi bi-files me-2 text-accent-green"></i>Public Resources</h5>
+                <div class="d-flex flex-column gap-3">
+                    <div class="p-2 border-bottom border-secondary-subtle">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-white fw-semibold small">About</span>
+                            <span class="badge bg-glass-secondary text-white small" style="font-size:0.6rem;">Learn More</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mt-1">
+                            <span>Discover Earthscape's mission and vision.</span>
+                            <span><a href="/about" class="text-accent-blue text-decoration-none">Read More</a></span>
+                        </div>
+                    </div>
+                    <div class="p-2 border-bottom border-secondary-subtle">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-white fw-semibold small">FAQ</span>
+                            <span class="badge bg-glass-secondary text-white small" style="font-size:0.6rem;">Get Answers</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mt-1">
+                            <span>Find answers to frequently asked questions.</span>
+                            <span><a href="/faq" class="text-accent-blue text-decoration-none">View FAQ</a></span>
+                        </div>
+                    </div>
+                    <div class="p-2 border-bottom border-secondary-subtle">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-white fw-semibold small">Contact</span>
+                            <span class="badge bg-glass-secondary text-white small" style="font-size:0.6rem;">Get in Touch</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mt-1">
+                            <span>Reach out to our team for support or inquiries.</span>
+                            <span><a href="/contact" class="text-accent-blue text-decoration-none">Contact Us</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 p-3 rounded bg-glass-secondary text-center">
+                <small class="text-muted"><i class="bi bi-lock-fill me-1"></i>Access to protected areas requires authentication.</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

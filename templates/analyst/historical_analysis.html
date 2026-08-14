@@ -1,0 +1,174 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Historical Analysis | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-lime text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('analyst_dashboard') }}" class="text-accent-lime text-decoration-none">Analyst Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Historical Analysis</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4" data-aos="fade-up">
+
+    <!-- Header -->
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-1"><i class="bi bi-clock-history me-2 text-accent-lime"></i>Multi-Variable Historical Correlation</h4>
+            <p class="text-muted small">Telemetry Validated • Correlation Parameters</p>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="col-md-3 col-6">
+        <div class="stat-card text-center">
+            <div class="stat-label">Current CO₂</div>
+            <div class="stat-number">{{ latest_co2 }} ppm</div>
+            <small class="text-muted">+140 ppm since 1880</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card text-center">
+            <div class="stat-label">Temperature Anomaly</div>
+            <div class="stat-number" style="color: #ef4444;">+{{ latest_temp }}°C</div>
+            <small class="text-muted">+1.4°C since 1880</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card text-center">
+            <div class="stat-label">Correlation (r)</div>
+            <div class="stat-number" style="color: #a3e635;">{{ correlation }}</div>
+            <small class="text-muted">Strong positive correlation</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card text-center">
+            <div class="stat-label">Data Points</div>
+            <div class="stat-number">{{ historical_data.years|length }}</div>
+            <small class="text-muted">Years 1880–{{ latest_year }}</small>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-3">
+                <i class="bi bi-graph-up-arrow me-2 text-accent-lime"></i>CO₂ vs Global Temperature Anomaly (1880–{{ latest_year }})
+            </h5>
+            <div style="height: 320px;">
+                <canvas id="historicalChart"></canvas>
+            </div>
+            <div class="mt-3 d-flex justify-content-between text-muted small">
+                <span>Data source: EarthScape Historical Archive</span>
+                <span>Baseline: 1951–1980 average</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Correlation Explanation -->
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-2"><i class="bi bi-info-circle me-2 text-accent-lime"></i>Interpretation</h5>
+            <p class="text-muted">
+                The correlation coefficient <strong class="text-accent-lime">r = {{ correlation }}</strong> indicates a 
+                <strong class="text-white">very strong positive relationship</strong> 
+                between atmospheric CO₂ concentration and global average surface temperature anomaly.
+                As CO₂ levels have risen from ~280 ppm to over 420 ppm, global temperatures have increased by more than 1.2°C.
+                This historical trend aligns with the scientific consensus on anthropogenic climate change.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block js_extra %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Data passed from Flask
+        const historicalData = {{ historical_data|tojson }};
+        const years = historicalData.years;
+        const co2 = historicalData.co2;
+        const temp = historicalData.temp_anomaly;
+
+        // Chart.js
+        const ctx = document.getElementById('historicalChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'CO₂ Concentration (ppm)',
+                        data: co2,
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96,165,250,0.05)',
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 0.5,
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: 'Temperature Anomaly (°C)',
+                        data: temp,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,0.05)',
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 0.5,
+                        yAxisID: 'y1',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'nearest',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: '#8d9a91', font: { size: 11 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        position: 'left',
+                        beginAtZero: false,
+                        ticks: { color: '#8d9a91', font: { size: 9 } },
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        title: {
+                            display: true,
+                            text: 'CO₂ (ppm)',
+                            color: '#60a5fa',
+                            font: { size: 10 }
+                        }
+                    },
+                    y1: {
+                        position: 'right',
+                        beginAtZero: true,
+                        ticks: { color: '#8d9a91', font: { size: 9 } },
+                        grid: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Temp Anomaly (°C)',
+                            color: '#ef4444',
+                            font: { size: 10 }
+                        }
+                    },
+                    x: {
+                        ticks: { color: '#8d9a91', font: { size: 9 }, maxTicksLimit: 20 },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

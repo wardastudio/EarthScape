@@ -1,0 +1,76 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Sensors Dashboard | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/analyst/dashboard" class="text-accent-blue text-decoration-none">Analyst Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Sensors Telemetry</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4" data-aos="fade-up">
+    <!-- Map panel -->
+    <div class="col-lg-6">
+        <div class="glass-card p-2 h-100" style="min-height:300px;">
+            <div class="p-3 text-white fw-semibold"><i class="bi bi-geo-alt me-2 text-accent-green"></i>Live In-Situ Terrestrial Arrays</div>
+            <div id="leaflet-map-sensors" style="height: 250px; border-radius: 8px;"></div>
+        </div>
+    </div>
+
+    <!-- Dials / Charts panel -->
+    <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-3"><i class="bi bi-broadcast me-2 text-accent-blue"></i>Live Moisture & Salinity Dials</h5>
+            <div style="height: 250px;">
+                <canvas id="chart-realtime-sensors"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4" data-aos="fade-up" data-aos-delay="100">
+    <!-- Sensor node statuses table -->
+    <div class="col-md-12">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-battery-charging me-2 text-accent-green"></i>Sensor Nodes Diagnostic Signals</h5>
+            <div class="table-responsive">
+                <table class="table table-glass text-start align-middle">
+                    <thead>
+                        <tr>
+                            <th>Node ID</th>
+                            <th>Uplink Signal</th>
+                            <th>Battery Charge</th>
+                            <th>Internal Temperature</th>
+                            <th>Last Handshake</th>
+                            <th>Diagnostic</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-monospace text-white fw-bold">SN-TIS-042</td>
+                            <td class="text-accent-green"><i class="bi bi-wifi me-1"></i> Excellent (94 dBm)</td>
+                            <td><span class="text-white">88%</span> <i class="bi bi-battery-full text-accent-green ms-1"></i></td>
+                            <td>24.1°C</td>
+                            <td class="small">12 seconds ago</td>
+                            <td><span class="badge bg-success">Optimal</span></td>
+                        </tr>
+                        <tr>
+                            <td class="font-monospace text-white fw-bold">SN-TIS-043</td>
+                            <td class="text-warning"><i class="bi bi-wifi-2 me-1"></i> Weak (45 dBm)</td>
+                            <td><span class="text-white">12%</span> <i class="bi bi-battery-err text-danger ms-1"></i></td>
+                            <td>41.8°C</td>
+                            <td class="small">4 minutes ago</td>
+                            <td><span class="badge bg-warning text-dark">Battery Low</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

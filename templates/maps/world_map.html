@@ -1,0 +1,325 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}GIS World Map | EarthScape Climate Agency{% endblock %}
+
+{% block head_extra %}
+<!-- Leaflet is already loaded in base.html, but we'll add a custom dark theme -->
+<style>
+    #gis-map {
+        height: 70vh;
+        width: 100%;
+        border-radius: var(--radius);
+        border: 1px solid var(--glass-border);
+        background: rgba(5, 7, 10, 0.6);
+        backdrop-filter: blur(4px);
+        box-shadow: var(--shadow);
+    }
+
+    .map-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .map-filters .filter-btn {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 9999px;
+        padding: 0.4rem 1.2rem;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .map-filters .filter-btn:hover {
+        background: rgba(163,230,53,0.08);
+        border-color: rgba(163,230,53,0.2);
+        color: var(--text-main);
+    }
+
+    .map-filters .filter-btn.active {
+        background: var(--accent-lime);
+        color: #000;
+        border-color: var(--accent-lime);
+    }
+
+    /* Custom marker cluster styling (optional) */
+    .custom-marker {
+        background: var(--accent-lime);
+        border-radius: 50%;
+        border: 2px solid rgba(255,255,255,0.3);
+        box-shadow: 0 0 20px var(--accent-lime-glow);
+    }
+
+    /* Legend */
+    .map-legend {
+        background: rgba(5,7,10,0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-sm);
+        padding: 0.8rem 1rem;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        line-height: 1.8;
+        box-shadow: var(--shadow);
+    }
+
+    .legend-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+
+    .legend-dot.polar { background: #60a5fa; }
+    .legend-dot.marine { background: #5eead4; }
+    .legend-dot.terrestrial { background: #a3e635; }
+
+    .map-controls {
+        position: absolute;
+        bottom: 1.5rem;
+        left: 1.5rem;
+        z-index: 1000;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .map-control-btn {
+        background: rgba(5,7,10,0.8);
+        backdrop-filter: blur(8px);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        color: var(--text-main);
+        padding: 0.5rem 0.8rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .map-control-btn:hover {
+        background: rgba(163,230,53,0.15);
+        border-color: var(--accent-lime);
+    }
+
+    @media (max-width: 768px) {
+        #gis-map {
+            height: 60vh;
+        }
+        .map-filters .filter-btn {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-accent-lime text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">GIS World Map</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="text-white mb-1"><i class="bi bi-globe2 me-2 text-accent-lime"></i>Global Climate Stations</h4>
+            <p class="text-muted small">Interactive map of telemetry nodes, buoy arrays, and carbon flux towers</p>
+        </div>
+        <div>
+            <span class="badge-status approved"><i class="bi bi-satellite me-1"></i>Live Telemetry</span>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="map-filters">
+        <button class="filter-btn active" data-layer="all">All Stations</button>
+        <button class="filter-btn" data-layer="polar">❄️ Polar Stations</button>
+        <button class="filter-btn" data-layer="marine">🌊 Marine Buoys</button>
+        <button class="filter-btn" data-layer="terrestrial">🌳 Carbon Towers</button>
+        <button class="filter-btn" data-layer="urban">🏙️ Urban Sensors</button>
+    </div>
+
+    <!-- Map Container -->
+    <div id="gis-map"></div>
+
+    <!-- Map Legend -->
+    <div class="map-legend mt-3">
+        <div class="d-flex flex-wrap gap-4">
+            <div><span class="legend-dot polar"></span> Polar Stations</div>
+            <div><span class="legend-dot marine"></span> Marine Buoys</div>
+            <div><span class="legend-dot terrestrial"></span> Terrestrial Carbon Towers</div>
+            <div><span class="legend-dot" style="background: #fbbf24;"></span> Urban Sensors</div>
+        </div>
+    </div>
+
+    <!-- Additional Controls (optional) -->
+    <div class="mt-2 text-end">
+        <small class="text-muted">
+            <i class="bi bi-geo-alt me-1"></i> Click any marker for station details
+        </small>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // =============================================
+        // 1. INITIALIZE MAP
+        // =============================================
+        const map = L.map('gis-map', {
+            center: [20, 0],
+            zoom: 2,
+            zoomControl: true,
+            fadeAnimation: true,
+            attributionControl: true,
+        });
+
+        // =============================================
+        // 2. DARK BASEMAP (CartoDB Dark)
+        // =============================================
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; CartoDB',
+            subdomains: 'abcd',
+            maxZoom: 19,
+            minZoom: 2,
+        }).addTo(map);
+
+        // =============================================
+        // 3. SAMPLE CLIMATE STATION DATA
+        // =============================================
+        const stations = [
+            // Polar Stations
+            { lat: -78.5, lng: -106.8, name: 'Amundsen-Scott South Pole', type: 'polar', temp: -49, humidity: 68, aqi: 12 },
+            { lat: 78.2, lng: 15.6, name: 'Ny-Ålesund, Svalbard', type: 'polar', temp: -12, humidity: 72, aqi: 8 },
+            { lat: -67.5, lng: -68.1, name: 'Rothera Research Station', type: 'polar', temp: -8, humidity: 80, aqi: 10 },
+
+            // Marine Buoys
+            { lat: 32.0, lng: -64.0, name: 'Bermuda Atlantic Time-series', type: 'marine', temp: 26, humidity: 82, aqi: 35 },
+            { lat: 22.5, lng: -158.0, name: 'Hawaii Ocean Time-series', type: 'marine', temp: 28, humidity: 78, aqi: 40 },
+            { lat: -30.0, lng: 30.0, name: 'South Indian Ocean Buoy', type: 'marine', temp: 22, humidity: 85, aqi: 25 },
+            { lat: 50.0, lng: -145.0, name: 'North Pacific Gyre Buoy', type: 'marine', temp: 18, humidity: 75, aqi: 20 },
+
+            // Terrestrial Carbon Towers
+            { lat: -3.0, lng: -60.0, name: 'Amazon Basin Flux Tower', type: 'terrestrial', temp: 32, humidity: 88, aqi: 65 },
+            { lat: 45.0, lng: -120.0, name: 'US Pacific Carbon Tower', type: 'terrestrial', temp: 18, humidity: 55, aqi: 45 },
+            { lat: 55.0, lng: -95.0, name: 'Canadian Boreal Forest Tower', type: 'terrestrial', temp: 12, humidity: 60, aqi: 30 },
+            { lat: -25.0, lng: 135.0, name: 'Australian Outback Tower', type: 'terrestrial', temp: 40, humidity: 30, aqi: 80 },
+
+            // Urban Sensors
+            { lat: 40.7, lng: -74.0, name: 'New York City Sensor Array', type: 'urban', temp: 28, humidity: 65, aqi: 120 },
+            { lat: 51.5, lng: -0.1, name: 'London Urban Telemetry', type: 'urban', temp: 20, humidity: 70, aqi: 95 },
+            { lat: 35.7, lng: 139.7, name: 'Tokyo Metropolitan Sensors', type: 'urban', temp: 30, humidity: 60, aqi: 85 },
+        ];
+
+        // =============================================
+        // 4. CREATE MARKER GROUPS BY TYPE
+        // =============================================
+        const markerGroups = {
+            polar: L.layerGroup(),
+            marine: L.layerGroup(),
+            terrestrial: L.layerGroup(),
+            urban: L.layerGroup(),
+        };
+
+        const iconColors = {
+            polar: '#60a5fa',
+            marine: '#5eead4',
+            terrestrial: '#a3e635',
+            urban: '#fbbf24',
+        };
+
+        // Generate markers
+        stations.forEach(station => {
+            const color = iconColors[station.type] || '#a3e635';
+            const icon = L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="background:${color};width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 12px ${color}88;"></div>`,
+                iconSize: [12, 12],
+                iconAnchor: [6, 6],
+            });
+
+            const marker = L.marker([station.lat, station.lng], { icon: icon })
+                .bindPopup(`
+                    <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width:180px; background:#0a1016; color:#f5f7f4; border-radius:8px; padding:8px;">
+                        <strong style="color:${color};">${station.name}</strong><br>
+                        <span style="color:#8d9a91;">Type: ${station.type}</span><br>
+                        <span>🌡️ ${station.temp}°C &nbsp; 💧 ${station.humidity}% &nbsp; 🏭 AQI ${station.aqi}</span>
+                    </div>
+                `);
+
+            markerGroups[station.type].addLayer(marker);
+        });
+
+        // =============================================
+        // 5. ADD LAYERS TO MAP
+        // =============================================
+        // Add all layers to map initially (show all)
+        Object.values(markerGroups).forEach(group => group.addTo(map));
+
+        // =============================================
+        // 6. FILTER FUNCTIONALITY
+        // =============================================
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const allTypes = ['polar', 'marine', 'terrestrial', 'urban'];
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active button
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const layer = this.dataset.layer;
+
+                // Remove all layers first
+                Object.values(markerGroups).forEach(group => map.removeLayer(group));
+
+                if (layer === 'all') {
+                    // Add all back
+                    Object.values(markerGroups).forEach(group => group.addTo(map));
+                } else {
+                    // Add only the selected layer
+                    if (markerGroups[layer]) {
+                        markerGroups[layer].addTo(map);
+                    }
+                }
+            });
+        });
+
+        // =============================================
+        // 7. ADD SIMPLE CONTROLS (optional)
+        // =============================================
+        // Fit bounds to show all markers when map loads
+        const allMarkers = stations.map(s => [s.lat, s.lng]);
+        if (allMarkers.length) {
+            const bounds = L.latLngBounds(allMarkers);
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 4 });
+        }
+
+        // =============================================
+        // 8. RESPONSIVE – trigger resize when sidebar toggles
+        // =============================================
+        // Listen for sidebar toggle (hamburger) to resize map
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                setTimeout(() => map.invalidateSize(), 350);
+            });
+        }
+
+        // Also invalidate on window resize
+        window.addEventListener('resize', () => map.invalidateSize());
+
+        console.log('🌍 EarthScape GIS Map loaded successfully!');
+    });
+</script>
+{% endblock %}

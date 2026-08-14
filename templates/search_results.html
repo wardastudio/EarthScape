@@ -1,0 +1,100 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Search Results | EarthScape{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-lime text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Search</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row" data-aos="fade-up">
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-3">
+                <i class="bi bi-search me-2 text-accent-lime"></i>
+                Search Results for <span class="text-accent-lime">"{{ query }}"</span>
+            </h4>
+
+            {% if not query %}
+                <p class="text-muted">Enter a search term above.</p>
+            {% elif results.datasets|length == 0 and results.users|length == 0 and results.locations|length == 0 %}
+                <p class="text-muted">No results found for "{{ query }}". Try a different term.</p>
+            {% else %}
+
+                <!-- Datasets -->
+                {% if results.datasets %}
+                <h5 class="text-white mt-3"><i class="bi bi-folder me-2 text-accent-lime"></i>Datasets ({{ results.datasets|length }})</h5>
+                <div class="table-responsive">
+                    <table class="table table-glass">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Source</th>
+                                <th>Format</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ds in results.datasets %}
+                            <tr>
+                                <td>{{ ds.id }}</td>
+                                <td>{{ ds.name }}</td>
+                                <td>{{ ds.source }}</td>
+                                <td>{{ ds.format }}</td>
+                                <td><span class="badge-status {{ ds.status|lower }}">{{ ds.status }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <!-- Users -->
+                {% if results.users %}
+                <h5 class="text-white mt-4"><i class="bi bi-people me-2 text-accent-lime"></i>Users ({{ results.users|length }})</h5>
+                <div class="table-responsive">
+                    <table class="table table-glass">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in results.users %}
+                            <tr>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.role }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <!-- Weather Conditions -->
+                {% if results.locations %}
+                <h5 class="text-white mt-4"><i class="bi bi-cloud-sun me-2 text-accent-lime"></i>Weather Conditions ({{ results.locations|length }})</h5>
+                <div class="d-flex flex-wrap gap-3">
+                    {% for loc in results.locations %}
+                    <div class="glass-panel p-3">
+                        <span class="fw-semibold text-white">{{ loc.condition }}</span>
+                        <span class="text-muted ms-2">({{ loc.count }} records)</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

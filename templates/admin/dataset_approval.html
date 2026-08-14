@@ -1,0 +1,201 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Approve Dataset | EarthScape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-accent-lime text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_datasets') }}" class="text-accent-lime text-decoration-none">Datasets</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Approve Dataset</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Main Approval Card -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4">
+            <!-- Status Badge -->
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <span class="badge-status pending mb-2 d-inline-block">
+                        <i class="bi bi-clock-history me-1"></i>VERIFICATION PENDING
+                    </span>
+                    <h3 class="text-white mb-1">{{ dataset.name or 'EarthScape Climate Baseline' }}</h3>
+                    <small class="text-muted">
+                        <i class="bi bi-tag me-1"></i>{{ dataset.id or 'DS-001' }} •
+                        <i class="bi bi-calendar3 me-1 ms-2"></i>Uploaded: {{ dataset.date or '2026-08-03' }}
+                    </small>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-secondary">{{ dataset.format or 'CSV' }}</span>
+                </div>
+            </div>
+
+            <hr class="border-secondary">
+
+            <!-- Dataset Details Grid -->
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="glass-panel p-3">
+                        <small class="text-muted d-block">Resolution Grid</small>
+                        <span class="text-white fw-semibold">{{ dataset.resolution or '1.0 degree' }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-panel p-3">
+                        <small class="text-muted d-block">File Properties</small>
+                        <span class="text-white fw-semibold">{{ dataset.size or '33.4 KB' }} • {{ dataset.format or 'CSV' }} format</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-panel p-3">
+                        <small class="text-muted d-block">Uploader Node</small>
+                        <span class="text-white fw-semibold">{{ dataset.uploader or 'Marcus Vance (IT Architect)' }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-panel p-3">
+                        <small class="text-muted d-block">Source</small>
+                        <span class="text-white fw-semibold">{{ dataset.source or 'Sentinel-2 Satellite Core' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary mt-4">
+
+            <!-- Integrity Validation -->
+            <h5 class="text-white mb-3">
+                <i class="bi bi-shield-check me-2 text-accent-lime"></i>Integrity Validation Check
+            </h5>
+            <div class="glass-panel p-3 mb-3">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill text-success fs-4 me-2"></i>
+                    <span class="text-white">Pass (Checksum Valid)</span>
+                </div>
+            </div>
+
+            <!-- Validation Logs -->
+            <h5 class="text-white mb-3">
+                <i class="bi bi-terminal me-2 text-accent-lime"></i>Validation Diagnostic Logs
+            </h5>
+            <div class="glass-panel p-3" style="font-family: 'Courier New', monospace; font-size: 0.85rem; max-height: 200px; overflow-y: auto;">
+                <div class="text-success">[00:12:05] Initializing file checksum scan... Success</div>
+                <div class="text-info">[00:12:08] Parsing NetCDF structural dimensions... Found [12000, 8000, 365]</div>
+                <div class="text-success">[00:12:12] Scanning for anomalous zero voids... 0.00% voids detected</div>
+                <div class="text-info">[00:12:14] Grid coordinates mapping check... Match with Brazil Sector-4 bounds</div>
+                <div class="text-warning">[00:12:18] Spatial resolution validation... 10 meters (within tolerance)</div>
+                <div class="text-success">[00:12:22] Temporal coverage check... 365 days complete</div>
+                <div class="text-info">[00:12:26] Metadata validation... All required fields present</div>
+                <div class="text-success">[00:12:30] ✅ All validation checks passed</div>
+            </div>
+
+            <hr class="border-secondary mt-4">
+
+            <!-- Bounding Box -->
+            <h5 class="text-white mb-3">
+                <i class="bi bi-bounding-box-circles me-2 text-accent-lime"></i>Target Bounding Box Overlay
+            </h5>
+            <div class="glass-panel p-3 text-center" style="min-height: 160px; background: radial-gradient(circle at center, rgba(163,230,53,0.05), rgba(6,10,16,0.8));">
+                <div class="d-flex justify-content-center align-items-center" style="min-height: 120px;">
+                    <div class="text-center">
+                        <i class="bi bi-map fs-1 text-muted d-block mb-2"></i>
+                        <span class="text-muted">Map Preview</span>
+                        <div class="d-flex gap-4 mt-2 text-muted small">
+                            <span>N: {{ dataset.north or '-3.4' }}°</span>
+                            <span>S: {{ dataset.south or '-4.5' }}°</span>
+                            <span>E: {{ dataset.east or '-61.2' }}°</span>
+                            <span>W: {{ dataset.west or '-62.8' }}°</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approval Action Panel -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4 position-sticky" style="top: 80px;">
+            <h5 class="text-white mb-3">
+                <i class="bi bi-clipboard-check me-2 text-accent-lime"></i>Approval Action Panel
+            </h5>
+
+            <p class="text-muted small">
+                Confirm dataset accuracy standards are met to merge file coordinates into global predictions.
+            </p>
+
+            <form method="POST" action="{{ url_for('approve_dataset', dataset_id=dataset.id) if dataset else '#' }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <!-- Review Notes -->
+                <div class="mb-3">
+                    <label class="form-label">Review Notes</label>
+                    <textarea name="notes" class="form-control-glass" rows="3" placeholder="Add validation comments..."></textarea>
+                </div>
+
+                <!-- Approval Status -->
+                <div class="mb-3">
+                    <label class="form-label">Decision</label>
+                    <select name="status" class="form-control-glass">
+                        <option value="approved">Approve Dataset</option>
+                        <option value="rejected">Reject Dataset</option>
+                        <option value="pending">Request Changes</option>
+                    </select>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary" name="action" value="approve">
+                        <i class="bi bi-check2-circle me-1"></i>Confirm Approval
+                    </button>
+                    <button type="submit" class="btn btn-secondary" name="action" value="reject">
+                        <i class="bi bi-x-circle me-1"></i>Reject Dataset
+                    </button>
+                </div>
+
+                <div class="mt-3 text-center">
+                    <a href="{{ url_for('admin_datasets') }}" class="text-muted text-decoration-none small">
+                        <i class="bi bi-arrow-left me-1"></i>Back to Dataset List
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Info Row -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="glass-card p-3">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <i class="bi bi-info-circle fs-4 text-accent-lime"></i>
+                <div>
+                    <strong class="text-white">Approval Workflow</strong>
+                    <p class="text-muted mb-0 small">
+                        Approved datasets are immediately available for <strong>climate analysis</strong>, 
+                        <strong>ML predictions</strong>, and <strong>GIS mapping</strong> across all dashboards.
+                        Rejected datasets can be re-uploaded with corrections.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+{{ super() }}
+<script>
+    // Auto-close alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.classList.remove('show');
+                alert.classList.add('fade');
+            }, 5000);
+        });
+    });
+</script>
+{% endblock %}

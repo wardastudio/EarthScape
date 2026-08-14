@@ -1,0 +1,94 @@
+{% extends 'layouts/base.html' %}
+{% set hide_sidebar = False %}
+{% block title %}Contact Support | Earthscape Climate Agency{% endblock %}
+
+{% block content %}
+<div class="container py-5" data-aos="fade-up">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <span class="badge bg-glass-success text-accent-green mb-3 px-3 py-2 border border-success-subtle">GET IN TOUCH</span>
+        <h1 class="display-4 fw-bold text-white">Contact Agency Officers</h1>
+        <p class="text-secondary max-width-text mx-auto" style="max-width: 600px;">Have questions about our data feeds, satellite calibration, or research integrations? Submit a query below.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Contact details -->
+        <div class="col-lg-5">
+            <div class="d-flex flex-column gap-4 h-100">
+                <div class="glass-card p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="fs-2 text-accent-blue me-3"><i class="bi bi-geo-alt"></i></div>
+                        <div>
+                            <h5 class="m-0 text-white">Geneva Operations Hub</h5>
+                            <p class="text-secondary small m-0">Avenue de la Paix 8, 1211 Geneva, Switzerland</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="fs-2 text-accent-green me-3"><i class="bi bi-envelope"></i></div>
+                        <div>
+                            <h5 class="m-0 text-white">General Inquiries</h5>
+                            <p class="text-secondary small m-0">telemetry@earthscape.org</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="fs-2 text-warning me-3"><i class="bi bi-phone"></i></div>
+                        <div>
+                            <h5 class="m-0 text-white">Agency Telemetry Line</h5>
+                            <p class="text-secondary small m-0">+41 22 730 8111</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Micro Leaflet map container to show office location -->
+                <div class="glass-card p-2 flex-grow-1" style="min-height: 200px;">
+                    <div id="leaflet-map-sensors" style="height: 100%; min-height: 200px; border-radius: 8px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact form -->
+        <div class="col-lg-7">
+            <div class="glass-card p-5">
+                <h3 class="mb-4 text-white">Inquiry Form</h3>
+                
+                <form action="#" method="POST" onsubmit="event.preventDefault(); window.showClimateToast('Inquiry submitted successfully. A telemetry officer will review it shortly.', 'success');">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label form-label-custom">First Name</label>
+                            <input type="text" class="form-control form-control-glass" placeholder="Sarah" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label form-label-custom">Last Name</label>
+                            <input type="text" class="form-control form-control-glass" placeholder="Jenkins" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label form-label-custom">Email Address</label>
+                            <input type="email" class="form-control form-control-glass" placeholder="s.jenkins@academy.edu" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label form-label-custom">Inquiry Type</label>
+                            <select class="form-control form-control-glass">
+                                <option>Satellite Telemetry Access Request</option>
+                                <option>Terrestrial Sensor Network Collocation</option>
+                                <option>Academic Collaboration Inquiry</option>
+                                <option>General Administrative Question</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label form-label-custom">Message</label>
+                            <textarea class="form-control form-control-glass" rows="5" placeholder="Specify requirements, sensor IDs, spatial boundaries..." required></textarea>
+                        </div>
+                        <div class="col-md-12 text-end">
+                            <button type="submit" class="btn btn-glass-success px-4 py-2 mt-2">Submit Query</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

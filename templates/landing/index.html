@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EarthScape | AI Climate Intelligence Platform</title>
+    <meta name="description"
+        content="EarthScape transforms satellite imagery, weather stations, and environmental sensor data into AI-powered climate intelligence." />
+    <link rel="stylesheet" href="{{ url_for('static', filename='landing/css/style.css') }}" />
+</head>
+
+<body>
+
+    <!-- 3D Three.js Globe Canvas -->
+    <canvas id="scene"></canvas>
+
+    <!-- Cinematic scrim â€” above Earth canvas, below all UI content -->
+    <div id="cinema-scrim" aria-hidden="true"></div>
+
+    <!-- Earth glow â€” cinematic bloom above WebGL canvas, below all UI -->
+    <div id="earth-glow" aria-hidden="true"></div>
+
+
+
+    <!-- Floating Glass Navbar -->
+    <div class="navbar-wrapper">
+        <nav class="navbar">
+            <a href="#hero" class="nav-brand">
+                <span class="brand-logo-text">EARTHSCAPE</span>
+                <span class="brand-subtag">AI Climate Intelligence Platform</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/about" data-section="about">About</a></li>
+                <li><a href="/contact" data-section="contact">Contact</a></li>
+                <li><a href="/help" data-section="help">Help</a></li>
+                <li><a href="/faq" data-section="faq">FAQ</a></li>
+                <li><a href="/login" data-section="faq">Sign In</a></li>
+            </ul>
+            <a href="register" class="nav-signup">Set Started &rarr;</a>
+        </nav>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="app-container">
+
+        <!-- SECTION 1: HERO -->
+        <section class="hero-section" id="hero">
+            <div class="hero-grid">
+
+                <div class="hero-content">
+                    <div class="badge-tag">
+                        <span class="dot"></span>
+                        AI Climate Intelligence Platform
+                    </div>
+                    <h1>
+                        Predict Climate.<br />
+                        <span class="serif-italic lime-text">Protect Tomorrow.</span>
+                    </h1>
+                    <p class="hero-desc">
+                        EarthScape transforms satellite imagery, weather stations, and environmental sensor data into
+                        AI-powered climate intelligence for faster, smarter environmental decisions.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#pipeline" class="btn-primary">Explore the Platform &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Right Side Glass Quote & Telemetry Pill Box -->
+                <div class="hero-quote-card glass-panel">
+                    <div class="quote-title">Platform Architecture</div>
+                    <div class="quote-items">
+                        <div class="quote-item">
+                            <span class="num">01</span>
+                            <span class="label">Satellite Telemetry</span>
+                        </div>
+                        <div class="quote-item">
+                            <span class="num">02</span>
+                            <span class="label">Big Data Engine</span>
+                        </div>
+                        <div class="quote-item">
+                            <span class="num">03</span>
+                            <span class="label">Machine Learning</span>
+                        </div>
+                        <div class="quote-item">
+                            <span class="num">04</span>
+                            <span class="label">Climate Intelligence</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MONITORING THE PLANET IN REAL TIME -->
+        <section class="section-monitoring" id="platform" data-nav-section="platform">
+            <div class="section-header" id="section2-header">
+                <div class="badge-tag hero-chip"><span class="dot"></span> Real-Time Ingestion</div>
+                <h2 class="hero-heading">Monitoring the Planet in <span class="serif-italic lime-text">Real Time</span>
+                </h2>
+                <div class="hero-line"></div>
+                <p class="hero-sub" style="margin-top: 1.25rem;">EarthScape continuously collects data from satellites,
+                    weather stations, and environmental sensors across the globe.</p>
+            </div>
+
+            <div class="monitoring-cards">
+                <div class="monitoring-card glass-panel" data-parallax="0.1">
+                    <div class="card-icon-svg">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13 7 9 3 5 7l4 4" />
+                            <path d="m17 11 4 4-4 4-4-4" />
+                            <path d="m8 12 4 4" />
+                            <path d="m11 15 3 3" />
+                            <path d="m5 15-2 2" />
+                            <path d="m9 19-2 2" />
+                        </svg>
+                    </div>
+                    <h3>Satellite Imagery</h3>
+                    <p>Continuous multispectral optical and radar feeds capturing global surface dynamics, ice coverage,
+                        and cloud formations.</p>
+                </div>
+                <div class="monitoring-card glass-panel" data-parallax="-0.1">
+                    <div class="card-icon-svg">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                    </div>
+                    <h3>Weather Stations</h3>
+                    <p>High-density ground station telemetry reporting live atmospheric pressure, ambient thermal
+                        gradients, and wind velocities.</p>
+                </div>
+                <div class="monitoring-card glass-panel" data-parallax="0.15">
+                    <div class="card-icon-svg">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20z" />
+                            <path d="M2 12h20" />
+                        </svg>
+                    </div>
+                    <h3>Environmental Sensors</h3>
+                    <p>Sub-surface ocean buoys, soil hydrology arrays, and greenhouse gas flux monitors sending
+                        real-time environmental metrics.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: BIG DATA PROCESSING PIPELINE -->
+        <section class="section-pipeline" id="pipeline">
+            <div class="section-header">
+                <div class="badge-tag"><span class="dot"></span> Scalable Infrastructure</div>
+                <h2>Big Data <span class="serif-italic lime-text">Processing</span></h2>
+                <div class="hero-line"></div>
+                <p style="margin-top: 1.25rem;">Engineered to process petabytes of environmental telemetry in parallel
+                    with zero throughput bottlenecks.</p>
+            </div>
+
+            <div class="pipeline-wrapper">
+                <div class="pipeline-step" id="pipe-1">
+                    <div class="step-num">1</div>
+                    <div class="step-info">
+                        <h4>Data Sources</h4>
+                        <p>Satellites, IoT Ground Array & Oceanic Sensor Ingestion</p>
+                    </div>
+                </div>
+                <div class="pipeline-arrow">&darr;</div>
+
+                <div class="pipeline-step" id="pipe-2">
+                    <div class="step-num">2</div>
+                    <div class="step-info">
+                        <h4>HDFS Storage</h4>
+                        <p>Distributed Fault-Tolerant Climate Telemetry Repository</p>
+                    </div>
+                </div>
+                <div class="pipeline-arrow">&darr;</div>
+
+                <div class="pipeline-step" id="pipe-3">
+                    <div class="step-num">3</div>
+                    <div class="step-info">
+                        <h4>MapReduce Processing</h4>
+                        <p>Parallelized Spatial Feature Extraction & Temporal Aggregation</p>
+                    </div>
+                </div>
+                <div class="pipeline-arrow">&darr;</div>
+
+                <div class="pipeline-step" id="pipe-4">
+                    <div class="step-num">4</div>
+                    <div class="step-info">
+                        <h4>Machine Learning</h4>
+                        <p>Neural Physics Simulation & Spatiotemporal Prediction Models</p>
+                    </div>
+                </div>
+                <div class="pipeline-arrow">&darr;</div>
+
+                <div class="pipeline-step" id="pipe-5">
+                    <div class="step-num">5</div>
+                    <div class="step-info">
+                        <h4>Climate Intelligence Dashboard</h4>
+                        <p>Interactive Real-Time Decision Support & Early Warning System</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: AI CLIMATE ANALYSIS -->
+        <section class="section-analysis" id="analytics" data-nav-section="analytics">
+            <div class="section-header">
+                <div class="badge-tag"><span class="dot"></span> Predictive Engine</div>
+                <h2>AI Climate <span class="serif-italic lime-text">Analysis</span></h2>
+                <div class="hero-line"></div>
+                <p style="margin-top: 1.25rem;">Machine learning models continuously scanning planetary data for
+                    anomalies and forecasting climate shifts.</p>
+            </div>
+
+            <div class="analysis-grid">
+                <div class="analysis-card glass-panel">
+                    <div class="analysis-header">
+                        <div class="analysis-icon-svg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+                            </svg>
+                        </div>
+                        <h3>Temperature Trends</h3>
+                    </div>
+                    <p>Predictive surface and tropospheric thermal anomaly modeling with high spatial resolution.</p>
+                    <div class="card-mini-graphic">
+                        <div class="mini-bar" style="height: 40%"></div>
+                        <div class="mini-bar" style="height: 65%"></div>
+                        <div class="mini-bar" style="height: 50%"></div>
+                        <div class="mini-bar" style="height: 85%"></div>
+                        <div class="mini-bar" style="height: 70%"></div>
+                    </div>
+                </div>
+
+                <div class="analysis-card glass-panel">
+                    <div class="analysis-header">
+                        <div class="analysis-icon-svg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+                                <path d="M16 14v6" />
+                                <path d="M8 14v6" />
+                                <path d="M12 16v6" />
+                            </svg>
+                        </div>
+                        <h3>Rainfall Forecasts</h3>
+                    </div>
+                    <p>Monsoon patterns, drought indexing, and precipitation vector projections across global basins.
+                    </p>
+                    <div class="card-mini-graphic">
+                        <div class="mini-bar" style="height: 80%"></div>
+                        <div class="mini-bar" style="height: 45%"></div>
+                        <div class="mini-bar" style="height: 90%"></div>
+                        <div class="mini-bar" style="height: 30%"></div>
+                        <div class="mini-bar" style="height: 60%"></div>
+                    </div>
+                </div>
+
+                <div class="analysis-card glass-panel">
+                    <div class="analysis-header">
+                        <div class="analysis-icon-svg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </div>
+                        <h3>Extreme Weather Detection</h3>
+                    </div>
+                    <p>Early automated detection for cyclones, atmospheric rivers, and severe convective storms.</p>
+                    <div class="card-mini-graphic">
+                        <div class="mini-bar" style="height: 30%"></div>
+                        <div class="mini-bar" style="height: 75%"></div>
+                        <div class="mini-bar" style="height: 95%"></div>
+                        <div class="mini-bar" style="height: 40%"></div>
+                        <div class="mini-bar" style="height: 80%"></div>
+                    </div>
+                </div>
+
+                <div class="analysis-card glass-panel">
+                    <div class="analysis-header">
+                        <div class="analysis-icon-svg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20z" />
+                                <path d="M2 12h20" />
+                            </svg>
+                        </div>
+                        <h3>Climate Pattern Analysis</h3>
+                    </div>
+                    <p>Deep neural tracking of El NiÃ±o Southern Oscillation (ENSO) and jet stream oscillations.</p>
+                    <div class="card-mini-graphic">
+                        <div class="mini-bar" style="height: 50%"></div>
+                        <div class="mini-bar" style="height: 55%"></div>
+                        <div class="mini-bar" style="height: 70%"></div>
+                        <div class="mini-bar" style="height: 65%"></div>
+                        <div class="mini-bar" style="height: 90%"></div>
+                    </div>
+                </div>
+
+                <div class="analysis-card glass-panel">
+                    <div class="analysis-header">
+                        <div class="analysis-icon-svg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M3 3v18h18" />
+                                <path d="m19 9-5 5-4-4-3 3" />
+                            </svg>
+                        </div>
+                        <h3>Predictive Models</h3>
+                    </div>
+                    <p>Multi-decade climate simulation ensembles generating probabilistic scenario evaluations.</p>
+                    <div class="card-mini-graphic">
+                        <div class="mini-bar" style="height: 40%"></div>
+                        <div class="mini-bar" style="height: 60%"></div>
+                        <div class="mini-bar" style="height: 75%"></div>
+                        <div class="mini-bar" style="height: 85%"></div>
+                        <div class="mini-bar" style="height: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="analysis-card glass-panel">
+                    <div class="analysis-header">
+                        <div class="analysis-icon-svg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                <path d="M12 8v4" />
+                                <path d="M12 16h.01" />
+                            </svg>
+                        </div>
+                        <h3>Risk Assessment</h3>
+                    </div>
+                    <p>Dynamic vulnerability metrics for critical infrastructure, coastal regions, and agriculture.</p>
+                    <div class="card-mini-graphic">
+                        <div class="mini-bar" style="height: 90%"></div>
+                        <div class="mini-bar" style="height: 40%"></div>
+                        <div class="mini-bar" style="height: 70%"></div>
+                        <div class="mini-bar" style="height: 80%"></div>
+                        <div class="mini-bar" style="height: 50%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: FLOATING STATISTICS -->
+        <section class="section-stats" id="stats">
+            <div class="section-header" style="margin-bottom: 2.5rem;">
+                <div class="badge-tag"><span class="dot"></span> Platform Performance</div>
+                <h2>Proven Scale & <span class="serif-italic lime-text">Accuracy</span></h2>
+                <div class="hero-line"></div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card glass-panel">
+                    <div class="stat-value">98%</div>
+                    <div class="stat-label">Prediction Accuracy</div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Real-Time Monitoring</div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-value">Millions</div>
+                    <div class="stat-label">Records Processed</div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-value">AI Powered</div>
+                    <div class="stat-label">Decision Support</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: DASHBOARD PREVIEW -->
+        <section class="section-dashboard" id="dashboard" data-nav-section="dashboard">
+            <div class="section-header">
+                <div class="badge-tag"><span class="dot"></span> Platform Interface</div>
+                <h2>Command <span class="serif-italic lime-text">Center</span></h2>
+                <div class="hero-line"></div>
+                <p style="margin-top: 1.25rem;">Unified environment for real-time situational awareness and long-term
+                    climate strategy.</p>
+            </div>
+
+            <div class="dashboard-container">
+                <div class="dashboard-mockup">
+                    <div class="dash-topbar">
+                        <div class="dash-dot red"></div>
+                        <div class="dash-dot yellow"></div>
+                        <div class="dash-dot green"></div>
+                        <span
+                            style="font-size: 0.75rem; color: #94a3b8; margin-left: auto;">earthscape.ai/command-center</span>
+                    </div>
+                    <div class="dash-body">
+                        <div class="dash-widget-grid">
+                            <div class="dash-widget">
+                                <div class="dash-widget-title">GLOBAL THERMAL ANOMALY</div>
+                                <div class="dash-widget-val">+1.14 Â°C</div>
+                            </div>
+                            <div class="dash-widget">
+                                <div class="dash-widget-title">ACTIVE SENSOR NODES</div>
+                                <div class="dash-widget-val">142,890</div>
+                            </div>
+                        </div>
+                        <div class="dash-map-area">
+                            <div class="dash-map-label">&#9679; LIVE SATELLITE SPECTRUM LAYER ACTIVE</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-features">
+                    <div class="feature-item">
+                        <div class="feature-icon-svg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                                <line x1="9" y1="3" x2="9" y2="18" />
+                                <line x1="15" y1="6" x2="15" y2="21" />
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Interactive Maps</h4>
+                            <p>Multi-layer geospatial visualization engine with GIS vector overlays.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon-svg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10" />
+                                <line x1="12" y1="20" x2="12" y2="4" />
+                                <line x1="6" y1="20" x2="6" y2="14" />
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Forecast Charts</h4>
+                            <p>Real-time atmospheric time-series predictions with confidence bounds.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon-svg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Alerts</h4>
+                            <p>Autonomous warning system alerting on extreme weather risks.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon-svg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 21H3V3" />
+                                <path d="m18 8-5 5-3-3-4 4" />
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Analytics</h4>
+                            <p>Historical comparison engine across multi-decade climate archives.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon-svg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                <polyline points="10 9 9 9 8 9" />
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Reports</h4>
+                            <p>Automated executive summary generation for environmental compliance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: MACHINE LEARNING ARCHITECTURE -->
+        <section class="section-ml" id="ml">
+            <div class="section-header">
+                <div class="badge-tag"><span class="dot"></span> Intelligent Pipeline</div>
+                <h2>Machine Learning <span class="serif-italic lime-text">Architecture</span></h2>
+                <div class="hero-line"></div>
+                <p style="margin-top: 1.25rem;">Transforming raw environmental streams into actionable forecasts.</p>
+            </div>
+
+            <div class="ml-flow-container">
+                <div class="ml-node glass-panel">
+                    <div class="ml-node-icon-svg">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        </svg>
+                    </div>
+                    <h4>Historical Data</h4>
+                    <p>Decades of satellite & weather archives</p>
+                </div>
+                <div class="ml-node glass-panel">
+                    <div class="ml-node-icon-svg">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                    </div>
+                    <h4>Training</h4>
+                    <p>Distributed neural physics simulation</p>
+                </div>
+                <div class="ml-node glass-panel">
+                    <div class="ml-node-icon-svg">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="m16 12-4-4-4 4" />
+                            <path d="M12 16V8" />
+                        </svg>
+                    </div>
+                    <h4>Prediction</h4>
+                    <p>Spatiotemporal climate forecasting</p>
+                </div>
+                <div class="ml-node glass-panel">
+                    <div class="ml-node-icon-svg">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                    </div>
+                    <h4>Alerts</h4>
+                    <p>Instant risk notification triggers</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 8: CALL TO ACTION -->
+        <section class="section-cta" id="contact" data-nav-section="about">
+            <div class="cta-box glass-panel">
+                <div class="badge-tag" style="justify-content: center;"><span class="dot"></span> CRAFTED WITH PRECISION
+                </div>
+                <h2>
+                    <span class="demo-line">Building a Smarter Future</span>
+                    <span class="demo-line">with <span class="serif-italic lime-text">Climate Intelligence</span></span>
+                </h2>
+                <p class="cta-line-sub">Empowering organizations and governments to anticipate planetary shifts and
+                    build environmental resilience.</p>
+                <div class="cta-line-btn">
+                    <a href="contact" class="btn-primary">Join EarthScape &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer-wrapper">
+            <div class="footer-panel glass-panel">
+                <div class="footer-col">
+                    <a href="#" class="nav-brand" style="margin-bottom: 1rem;">
+                        <span class="brand-logo-text">EARTHSCAPE</span>
+                    </a>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+                        The Planet Speaks. EarthScape Listens.<br />
+                        AI-powered climate intelligence platform.
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="#hero">Home</a></li>
+                        <li><a href="/About">About Us</a></li>
+                        <li><a href="/FAQ">Frequently Asked Questions</a></li>
+                        <li><a href="/Help">Help</a></li>
+                        <li><a href="/register">Join</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Stay Connected</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">
+                        Subscribe for technical briefs and climate research updates.
+                    </p>
+                    <form class="subscribe-form"
+                        onsubmit="event.preventDefault(); alert('Subscribed to EarthScape Climate Intelligence Updates.');">
+                        <input type="email" class="subscribe-input" placeholder="Enter work email..." required />
+                        <button type="submit" class="subscribe-btn">&rarr;</button>
+                    </form>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2026 EarthScape Platform. Built for Climate Resilience.
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Scripts: Three.js, GSAP, ScrollTrigger, Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
+
+    <script src="{{ url_for('static', filename='landing/js/earth.js') }}"></script>
+    <script src="{{ url_for('static', filename='landing/js/main.js') }}"></script>
+
+</body>
+
+</html>

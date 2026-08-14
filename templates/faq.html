@@ -1,0 +1,69 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}FAQ | EarthScape Climate Agency{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4">
+    <h1 class="text-white display-6 fw-bold mb-2">
+        <i class="bi bi-question-circle me-2 text-accent-lime"></i>Frequently Asked Questions
+    </h1>
+    <p class="text-muted mb-4">Find answers to operational capabilities, sensor ingestion cycles, and research permission schemas.</p>
+
+    <div class="faq-list">
+        <!-- FAQ Item 1 -->
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-chevron-right me-2 text-accent-lime"></i>
+                How often is the satellite imagery telemetry updated?
+            </div>
+            <div class="faq-answer">
+                Satellite telemetry is updated every <strong>6 hours</strong> via the Sentinel-2 and Landsat-9 downlink pipelines. Real‑time data is available for selected regions.
+            </div>
+        </div>
+
+        <!-- FAQ Item 2 -->
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-chevron-right me-2 text-accent-lime"></i>
+                Can I download raw NetCDF or GeoTIFF datasets?
+            </div>
+            <div class="faq-answer">
+                Yes, approved researchers and analysts can download raw datasets in <strong>NetCDF, GeoTIFF, and HDF5</strong> formats via the Dataset Management portal.
+            </div>
+        </div>
+
+        <!-- FAQ Item 3 -->
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-chevron-right me-2 text-accent-lime"></i>
+                What machine learning models do you use for climate predictions?
+            </div>
+            <div class="faq-answer">
+                We currently use <strong>Linear Regression</strong> for carbon predictions, <strong>Decision Trees</strong> for flood risk, and <strong>KNN</strong> for heatwave detection. Ensemble models are in development.
+            </div>
+        </div>
+
+        <!-- FAQ Item 4 -->
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-chevron-right me-2 text-accent-lime"></i>
+                Is there a developer API available?
+            </div>
+            <div class="faq-answer">
+                Yes! Our <strong>REST API</strong> is available for authenticated users. Contact support for API keys and documentation.
+            </div>
+        </div>
+
+        <!-- FAQ Item 5 -->
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-chevron-right me-2 text-accent-lime"></i>
+                How can I get access to historical climate data?
+            </div>
+            <div class="faq-answer">
+                Historical data from 1880 to the present is available through the <strong>Historical Analysis</strong> dashboard for analysts and researchers.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

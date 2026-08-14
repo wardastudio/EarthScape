@@ -1,0 +1,109 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Reports Management | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-accent-blue text-decoration-none">Admin Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Reports Management</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4" data-aos="fade-up">
+    <!-- Reports list -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-4"><i class="bi bi-file-earmark-bar-graph me-2 text-accent-blue"></i>Generated Reports Archive</h4>
+            <div class="table-responsive">
+                <table class="table table-glass text-start align-middle">
+                    <thead>
+                        <tr>
+                            <th>Report Name</th>
+                            <th>Author</th>
+                            <th>File Info</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-white fs-6">Amazon Deforestation Quarterly Q2</div>
+                                <small class="text-muted">Generated: 2026-07-01</small>
+                            </td>
+                            <td>Dr. Sarah Jenkins</td>
+                            <td>4.2 MB | PDF</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-glass-secondary" onclick="alert('Downloading report Q2');"><i class="bi bi-download"></i></button>
+                                <button class="btn btn-sm btn-glass-secondary text-danger" onclick="alert('Purge report');"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-white fs-6">Global Ocean Thermal Anomaly Annual</div>
+                                <small class="text-muted">Generated: 2026-06-15</small>
+                            </td>
+                            <td>Elena Rostova</td>
+                            <td>12.8 MB | PDF</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-glass-secondary" onclick="alert('Downloading annual ocean report');"><i class="bi bi-download"></i></button>
+                                <button class="btn btn-sm btn-glass-secondary text-danger" onclick="alert('Purge report');"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-white fs-6">Arctic Glacier Runoff Predictions</div>
+                                <small class="text-muted">Generated: 2026-07-12</small>
+                            </td>
+                            <td>System Automated</td>
+                            <td>2.1 MB | DOCX</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-glass-secondary" onclick="alert('Downloading arctic prediction report');"><i class="bi bi-download"></i></button>
+                                <button class="btn btn-sm btn-glass-secondary text-danger" onclick="alert('Purge report');"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate Scheduler Form -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-calendar-event me-2 text-accent-green"></i>Schedule Report Ingestion</h5>
+            
+            <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Report configuration scheduled.');">
+                <div class="mb-3">
+                    <label class="form-label form-label-custom">Report Template</label>
+                    <select class="form-control form-control-glass">
+                        <option>Atmospheric CO2 Grids Analysis</option>
+                        <option>Sea Temperature Rise Tracker</option>
+                        <option>Regional Extreme Weather Hazards</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label form-label-custom">Export Format</label>
+                    <select class="form-control form-control-glass">
+                        <option>Adobe PDF (.pdf)</option>
+                        <option>Raw CSV Telemetry (.csv)</option>
+                        <option>Microsoft Word (.docx)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label form-label-custom">Recurrence Interval</label>
+                    <select class="form-control form-control-glass">
+                        <option>Every Monday (00:00 UTC)</option>
+                        <option>1st of every month</option>
+                        <option>Quarterly (Auto-run)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-glass-success w-100 mt-2">Schedule Task</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

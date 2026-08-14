@@ -1,0 +1,161 @@
+<!-- DEBUG: role = {{ role }}, current_user.role = {{ current_user.role }} -->
+{% set role = (current_user.role or 'guest').lower() %}
+{% set current_path = request.path %}
+
+<aside class="sidebar-glass" id="sidebar">
+    <!-- <div class="sidebar-brand">
+        <div class="brand-icon"><i class="bi bi-globe2"></i></div>
+        <div>
+            <div class="brand-text">EARTHSCAPE</div>
+            <div class="brand-sub">Climate Intelligence</div>
+        </div>
+    </div> -->
+        <button class="sidebar-toggle-btn" id="sidebarToggle" aria-label="Toggle sidebar">
+            <i class="bi bi-list"></i>
+        </button>
+    <nav class="nav flex-column">
+
+    {% if role == 'admin' %}
+        <!-- 👑 ADMIN FULL NAVIGATION -->
+        <span class="sidebar-header-title">Overview</span>
+        <a href="{{ url_for('admin_dashboard') }}" class="nav-link {{ 'active' if request.path == url_for('admin_dashboard') }}">
+            <i class="bi bi-speedometer2"></i> Command Center
+        </a>
+
+        <span class="sidebar-header-title">Data &amp; Processing</span>
+        <a href="{{ url_for('admin_datasets') }}" class="nav-link {{ 'active' if request.path.startswith('/admin/datasets') and 'upload' not in request.path and 'approval' not in request.path }}">
+            <i class="bi bi-folder"></i> Datasets
+        </a>
+        <a href="{{ url_for('admin_upload_dataset') }}" class="nav-link {{ 'active' if request.path == url_for('admin_upload_dataset') }}">
+            <i class="bi bi-upload"></i> Dataset Upload
+        </a>
+        <a href="{{ url_for('admin_dataset_approval') }}" class="nav-link {{ 'active' if request.path == url_for('admin_dataset_approval') }}">
+            <i class="bi bi-check-circle"></i> Dataset Approval
+        </a>
+        <a href="{{ url_for('admin_monitoring') }}" class="nav-link {{ 'active' if request.path == url_for('admin_monitoring') }}">
+            <i class="bi bi-hdd-rack"></i> Hadoop / Big Data
+        </a>
+
+        <span class="sidebar-header-title">Climate Intelligence</span>
+        <a href="{{ url_for('admin_weather_analytics') }}" class="nav-link {{ 'active' if request.path == url_for('admin_weather_analytics') }}">
+            <i class="bi bi-cloud-sun"></i> Weather Analytics
+        </a>
+        <a href="{{ url_for('admin_trends') }}" class="nav-link {{ 'active' if request.path == url_for('admin_trends') }}">
+            <i class="bi bi-graph-up"></i> Climate Trends
+        </a>
+        <a href="{{ url_for('admin_timeline') }}" class="nav-link {{ 'active' if request.path == url_for('admin_timeline') }}">
+            <i class="bi bi-clock-history"></i> Climate Timeline
+        </a>
+        <a href="{{ url_for('admin_maps_world') }}" class="nav-link {{ 'active' if request.path == url_for('admin_maps_world') }}">
+            <i class="bi bi-map"></i> GIS / Maps
+        </a>
+        <a href="{{ url_for('admin_ml_insights') }}" class="nav-link {{ 'active' if request.path == url_for('admin_ml_insights') }}">
+            <i class="bi bi-cpu"></i> ML Insights
+        </a>
+
+        <span class="sidebar-header-title">Predictions</span>
+        <a href="{{ url_for('predict_carbon') }}" class="nav-link {{ 'active' if request.path == url_for('predict_carbon') }}">
+            <i class="bi bi-tree"></i> Carbon Prediction
+        </a>
+        <a href="{{ url_for('predict_flood') }}" class="nav-link {{ 'active' if request.path == url_for('predict_flood') }}">
+            <i class="bi bi-droplet"></i> Flood Prediction
+        </a>
+        <a href="{{ url_for('predict_heatwave') }}" class="nav-link {{ 'active' if request.path == url_for('predict_heatwave') }}">
+            <i class="bi bi-thermometer-sun"></i> Heatwave Prediction
+        </a>
+
+        <span class="sidebar-header-title">Monitoring</span>
+        <a href="{{ url_for('admin_monitoring') }}" class="nav-link {{ 'active' if request.path == url_for('admin_monitoring') }}">
+            <i class="bi bi-display"></i> System Monitoring
+        </a>
+        <a href="{{ url_for('admin_anomalies') }}" class="nav-link {{ 'active' if request.path == url_for('admin_anomalies') }}">
+            <i class="bi bi-exclamation-triangle"></i> Anomaly Detection
+        </a>
+        <a href="{{ url_for('admin_reports') }}" class="nav-link {{ 'active' if request.path == url_for('admin_reports') }}">
+            <i class="bi bi-file-earmark-bar-graph"></i> Reports
+        </a>
+        <a href="{{ url_for('admin_audit_logs') }}" class="nav-link {{ 'active' if request.path.startswith('/admin/audit-logs') }}">
+            <i class="bi bi-journal-text"></i> Audit Logs
+        </a>
+
+        <span class="sidebar-header-title">Administration</span>
+        <a href="{{ url_for('admin_users') }}" class="nav-link {{ 'active' if request.path.startswith('/admin/users') }}">
+            <i class="bi bi-people"></i> Users
+        </a>
+        <a href="{{ url_for('admin_roles') }}" class="nav-link {{ 'active' if request.path == url_for('admin_roles') }}">
+            <i class="bi bi-shield-lock"></i> Roles &amp; Permissions
+        </a>
+        <a href="{{ url_for('admin_backups') }}" class="nav-link {{ 'active' if request.path == url_for('admin_backups') }}">
+            <i class="bi bi-archive"></i> Backups
+        </a>
+        <a href="{{ url_for('admin_security') }}" class="nav-link {{ 'active' if request.path == url_for('admin_security') }}">
+    <i class="bi bi-shield-lock"></i> Security
+</a>
+        <a href="{{ url_for('admin_settings') }}" class="nav-link {{ 'active' if request.path.startswith('/admin/settings') }}">
+            <i class="bi bi-gear"></i> Settings
+        </a>
+
+    {% elif role == 'analyst' %}
+        <!-- 📊 ANALYST NAVIGATION -->
+        <span class="sidebar-header-title">Workspace</span>
+        <a href="{{ url_for('analyst_dashboard') }}" class="nav-link {{ 'active' if request.path == url_for('analyst_dashboard') }}">
+            <i class="bi bi-speedometer2"></i> Overview
+        </a>
+
+        <span class="sidebar-header-title">Analytics</span>
+        <a href="{{ url_for('weather_analytics') }}" class="nav-link {{ 'active' if request.path == url_for('weather_analytics') }}">
+            <i class="bi bi-cloud-sun"></i> Weather Analytics
+        </a>
+        <a href="{{ url_for('analyst_trends') }}" class="nav-link {{ 'active' if request.path == url_for('analyst_trends') }}">
+            <i class="bi bi-graph-up"></i> Climate Trends
+        </a>
+        <a href="{{ url_for('analyst_ml_insights') }}" class="nav-link {{ 'active' if request.path == url_for('analyst_ml_insights') }}">
+            <i class="bi bi-cpu"></i> ML Insights
+        </a>
+        <a href="{{ url_for('analyst_anomalies') }}" class="nav-link {{ 'active' if request.path == url_for('analyst_anomalies') }}">
+            <i class="bi bi-exclamation-triangle"></i> Anomalies
+        </a>
+
+        <span class="sidebar-header-title">Predictions</span>
+        <a href="{{ url_for('predict_carbon') }}" class="nav-link {{ 'active' if request.path == url_for('predict_carbon') }}">
+            <i class="bi bi-tree"></i> Carbon
+        </a>
+        <a href="{{ url_for('predict_flood') }}" class="nav-link {{ 'active' if request.path == url_for('predict_flood') }}">
+            <i class="bi bi-droplet"></i> Flood
+        </a>
+        <a href="{{ url_for('predict_heatwave') }}" class="nav-link {{ 'active' if request.path == url_for('predict_heatwave') }}">
+            <i class="bi bi-thermometer-sun"></i> Heatwave
+        </a>
+
+    {% elif role == 'researcher' %}
+        <!-- 🔬 RESEARCHER NAVIGATION -->
+        <span class="sidebar-header-title">Research</span>
+        <a href="{{ url_for('researcher_dashboard') }}" class="nav-link {{ 'active' if request.path == url_for('researcher_dashboard') }}">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a href="{{ url_for('analyst_trends') }}" class="nav-link {{ 'active' if request.path == url_for('analyst_trends') }}">
+            <i class="bi bi-graph-up"></i> Trends
+        </a>
+        <a href="{{ url_for('analyst_historical') }}" class="nav-link {{ 'active' if request.path == url_for('analyst_historical') }}">
+            <i class="bi bi-clock-history"></i> Historical
+        </a>
+
+    {% else %}
+        <!-- 👤 GUEST NAVIGATION -->
+        <span class="sidebar-header-title">Public</span>
+        <a href="{{ url_for('guest_dashboard') }}" class="nav-link {{ 'active' if request.path == url_for('guest_dashboard') }}">
+            <i class="bi bi-speedometer2"></i> Overview
+        </a>
+        <a href="{{ url_for('maps_world') }}" class="nav-link {{ 'active' if request.path == url_for('maps_world') }}">
+            <i class="bi bi-map"></i> Public Map
+        </a>
+    {% endif %}
+
+        <!-- Logout at bottom -->
+        <span class="sidebar-header-title" style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; margin-top: 12px;">Account</span>
+        <a href="{{ url_for('logout') }}" class="nav-link">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+
+    </nav>
+</aside>

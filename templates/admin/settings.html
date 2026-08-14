@@ -1,0 +1,67 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Agency Settings | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-accent-blue text-decoration-none">Admin Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Agency Settings</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center" data-aos="fade-up">
+    <div class="col-lg-10">
+        <div class="glass-card p-5">
+            <h3 class="text-white mb-4"><i class="bi bi-gear-wide-connected me-2 text-accent-blue"></i>Agency Settings Portal</h3>
+            
+            <form action="/admin/dashboard" method="GET" onsubmit="alert('System configurations successfully saved.');">
+                <div class="row g-4">
+                    <!-- General Settings -->
+                    <div class="col-md-6 border-end border-secondary pe-md-4">
+                        <h5 class="text-gradient-accent mb-3">General Metadata</h5>
+                        <div class="mb-3">
+                            <label class="form-label form-label-custom">Agency Name</label>
+                            <input type="text" class="form-control form-control-glass" value="Earthscape Climate Agency">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label form-label-custom">Tagline</label>
+                            <input type="text" class="form-control form-control-glass" value="Monitoring Earth, Predicting Tomorrow">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label form-label-custom">Primary Contact Address</label>
+                            <input type="email" class="form-control form-control-glass" value="telemetry@earthscape.org">
+                        </div>
+                    </div>
+
+                    <!-- Security Whitelist settings -->
+                    <div class="col-md-6 ps-md-4">
+                        <h5 class="text-gradient-accent mb-3">Security & Whitelists</h5>
+                        <div class="mb-3">
+                            <label class="form-label form-label-custom">Session Token Expire (Hours)</label>
+                            <input type="number" class="form-control form-control-glass" value="8">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label form-label-custom">Allowed Remote IP Ranges</label>
+                            <textarea class="form-control form-control-glass font-monospace small" rows="2" placeholder="192.168.10.*, 203.0.113.0/24"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch mt-4">
+                                <input class="form-check-input" type="checkbox" id="two_factor" checked>
+                                <label class="form-check-label text-secondary small" for="two_factor">Require hardware security keys (FIDO2) for Lead Analysts</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 text-end mt-5 pt-3 border-top border-secondary">
+                        <button type="submit" class="btn btn-glass-success px-4 py-2">Save System Config</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

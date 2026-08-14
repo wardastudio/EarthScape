@@ -1,0 +1,75 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Climate Trends | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/analyst/dashboard" class="text-accent-blue text-decoration-none">Analyst Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Climate Trends</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4" data-aos="fade-up">
+    <div class="col-md-12">
+        <div class="glass-card p-4">
+            <h3 class="text-white mb-2"><i class="bi bi-activity me-2 text-accent-blue"></i>Global Climate Indicators</h3>
+            <p class="text-secondary small m-0">Observed changes in Earth's energy balance and key environmental systems.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4" data-aos="fade-up" data-aos-delay="100">
+    <!-- Trend-1 -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-3"><i class="bi bi-thermometer-high me-2 text-danger"></i>Ocean Heat Content Anomaly</h5>
+            <p class="text-secondary small">
+                The oceans absorb over 90% of the excess heat trapped in the atmosphere. Current ocean heat content has reached a record high of 345 Zettajoules above the 1981–2010 average.
+            </p>
+            <div class="text-end">
+                <span class="badge bg-danger bg-opacity-25 text-danger px-3 py-2 border border-danger">Record Anomaly</span>
+            </div>
+        </div>
+    </div>
+    <!-- Trend-2 -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-3"><i class="bi bi-moisture me-2 text-accent-blue"></i>Sea Level Rise Acceleration</h5>
+            <p class="text-secondary small">
+                Global mean sea level has risen by approximately 24 centimeters since 1880. Satellite telemetry indicates an acceleration in rise rates to 4.4 mm per year.
+            </p>
+            <div class="text-end">
+                <span class="badge bg-primary bg-opacity-25 text-accent-blue px-3 py-2 border border-primary">Rising +4.4mm/yr</span>
+            </div>
+        </div>
+    </div>
+    <!-- Trend-3 -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-3"><i class="bi bi-snow2 me-2 text-warning"></i>Glacial Volume Contraction</h5>
+            <p class="text-secondary small">
+                Glaciers monitored by the World Glacier Monitoring Service have lost mass for 36 consecutive years. Polar ice caps show unprecedented melt volumes.
+            </p>
+            <div class="text-end">
+                <span class="badge bg-warning bg-opacity-25 text-warning px-3 py-2 border border-warning">Mass Loss Active</span>
+            </div>
+        </div>
+    </div>
+    <!-- Trend-4 -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-3"><i class="bi bi-wind me-2 text-accent-green"></i>Atmospheric Moisture Telemetry</h5>
+            <p class="text-secondary small">
+                Higher surface temperatures lead to increased evaporation rates, resulting in tropospheric column moisture levels rising at a rate of 7% per degree Celsius.
+            </p>
+            <div class="text-end">
+                <span class="badge bg-success bg-opacity-25 text-accent-green px-3 py-2 border border-success">Humidity Spike</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

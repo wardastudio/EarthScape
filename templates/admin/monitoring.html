@@ -1,0 +1,269 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}System Monitoring | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-lime text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-accent-lime text-decoration-none">Admin Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">System Monitoring</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4" data-aos="fade-up">
+
+    <!-- ========== TOP ROW: CPU Chart + Cluster Status ========== -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-3">
+                <i class="bi bi-speedometer2 me-2 text-accent-lime"></i>Live CPU Processing Telemetry
+                <span class="badge bg-success ms-2" id="liveBadge">● Live</span>
+            </h4>
+            <div style="height: 280px;">
+                <canvas id="cpuChart"></canvas>
+            </div>
+            <div class="d-flex justify-content-between text-muted small mt-2">
+                <span>Last 30 seconds</span>
+                <span>Average: <span id="avgCpu">0</span>%</span>
+                <span>Peak: <span id="peakCpu">0</span>%</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-4"><i class="bi bi-hdd-stack me-2 text-accent-lime"></i>Earthscape Cluster Nodes</h5>
+            
+            <div class="d-flex flex-column gap-3">
+                <div class="glass-panel p-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold text-white">Node-1: Svalbard Receiver</div>
+                        <small class="text-muted">Ping: 14ms | Uplink Active</small>
+                    </div>
+                    <span class="badge-status approved">Online</span>
+                </div>
+                <div class="glass-panel p-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold text-white">Node-2: Geneva Core</div>
+                        <small class="text-muted">Ping: 2ms | Processing Models</small>
+                    </div>
+                    <span class="badge-status approved">Online</span>
+                </div>
+                <div class="glass-panel p-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold text-white">Node-3: Antarctica Receiver</div>
+                        <small class="text-muted">Ping: 184ms | High Latency</small>
+                    </div>
+                    <span class="badge-status pending">Warning</span>
+                </div>
+            </div>
+            
+            <div class="glass-panel p-3 mt-4 text-center">
+                <div class="text-muted small">Total Cluster Ingestion</div>
+                <h4 class="text-accent-lime fw-bold my-1">1.4 Gbps</h4>
+                <small class="text-muted">Syncing with NOAA & ESA</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SECOND ROW: Memory, Disk, Network KPIs ========== -->
+    <div class="col-md-4">
+        <div class="stat-card text-center p-3">
+            <div class="stat-label">Memory Usage</div>
+            <div class="stat-number" style="font-size:1.8rem;">68%</div>
+            <div class="progress" style="height:6px; background: rgba(255,255,255,0.1);">
+                <div class="progress-bar" style="width:68%; background: var(--accent-lime);"></div>
+            </div>
+            <small class="text-muted">32.4 GB / 48 GB</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card text-center p-3">
+            <div class="stat-label">Disk I/O</div>
+            <div class="stat-number" style="font-size:1.8rem;">42%</div>
+            <div class="progress" style="height:6px; background: rgba(255,255,255,0.1);">
+                <div class="progress-bar" style="width:42%; background: #5eead4;"></div>
+            </div>
+            <small class="text-muted">Read 2.1 GB/s · Write 1.8 GB/s</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card text-center p-3">
+            <div class="stat-label">Network Throughput</div>
+            <div class="stat-number" style="font-size:1.8rem;">1.4 Gbps</div>
+            <div class="progress" style="height:6px; background: rgba(255,255,255,0.1);">
+                <div class="progress-bar" style="width:70%; background: #60a5fa;"></div>
+            </div>
+            <small class="text-muted">In 980 Mbps · Out 420 Mbps</small>
+        </div>
+    </div>
+
+    <!-- ========== THIRD ROW: Network Traffic Chart ========== -->
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-3">
+                <i class="bi bi-wifi me-2 text-accent-lime"></i>Network Traffic (Real‑time)
+            </h5>
+            <div style="height: 200px;">
+                <canvas id="networkChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block js_extra %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ====================================================
+        // CPU CHART – simulates live data every second
+        // ====================================================
+        const cpuCtx = document.getElementById('cpuChart').getContext('2d');
+        const timeLabels = [];
+        const cpuData = [];
+        const maxPoints = 30;
+
+        // Initial fill
+        for (let i = 0; i < maxPoints; i++) {
+            timeLabels.push(i + 's');
+            cpuData.push(Math.random() * 30 + 10); // base 10-40%
+        }
+
+        const cpuChart = new Chart(cpuCtx, {
+            type: 'line',
+            data: {
+                labels: timeLabels,
+                datasets: [{
+                    label: 'CPU Usage (%)',
+                    data: cpuData,
+                    borderColor: '#a3e635',
+                    backgroundColor: 'rgba(163, 230, 53, 0.08)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#a3e635',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        ticks: { color: '#8d9a91', font: { size: 10 } },
+                        grid: { color: 'rgba(255,255,255,0.04)' }
+                    },
+                    x: {
+                        ticks: { color: '#8d9a91', font: { size: 9 }, maxTicksLimit: 15 },
+                        grid: { display: false }
+                    }
+                },
+                animation: { duration: 200 }
+            }
+        });
+
+        // Simulate live updates
+        function updateCPU() {
+            const newVal = Math.random() * 40 + 10; // 10–50%
+            cpuData.push(newVal);
+            if (cpuData.length > maxPoints) cpuData.shift();
+            cpuChart.update();
+
+            // Update stats
+            const avg = cpuData.reduce((a,b) => a+b, 0) / cpuData.length;
+            const peak = Math.max(...cpuData);
+            document.getElementById('avgCpu').textContent = avg.toFixed(1);
+            document.getElementById('peakCpu').textContent = peak.toFixed(1);
+        }
+        setInterval(updateCPU, 1000);
+
+        // ====================================================
+        // NETWORK CHART – simulates in/out traffic
+        // ====================================================
+        const netCtx = document.getElementById('networkChart').getContext('2d');
+        const netLabels = [];
+        const inData = [];
+        const outData = [];
+        for (let i = 0; i < 20; i++) {
+            netLabels.push(i + 's');
+            inData.push(Math.random() * 300 + 200);  // 200-500 Mbps
+            outData.push(Math.random() * 200 + 100); // 100-300 Mbps
+        }
+
+        const netChart = new Chart(netCtx, {
+            type: 'line',
+            data: {
+                labels: netLabels,
+                datasets: [
+                    {
+                        label: 'Inbound (Mbps)',
+                        data: inData,
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96,165,250,0.08)',
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 1,
+                    },
+                    {
+                        label: 'Outbound (Mbps)',
+                        data: outData,
+                        borderColor: '#5eead4',
+                        backgroundColor: 'rgba(94,234,212,0.08)',
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 1,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#8d9a91', font: { size: 10 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#8d9a91', font: { size: 9 } },
+                        grid: { color: 'rgba(255,255,255,0.04)' }
+                    },
+                    x: {
+                        ticks: { color: '#8d9a91', font: { size: 9 }, maxTicksLimit: 12 },
+                        grid: { display: false }
+                    }
+                },
+                animation: { duration: 200 }
+            }
+        });
+
+        // Update network every 2 seconds
+        function updateNetwork() {
+            const newIn = Math.random() * 300 + 200;
+            const newOut = Math.random() * 200 + 100;
+            inData.push(newIn);
+            outData.push(newOut);
+            if (inData.length > 20) { inData.shift(); outData.shift(); }
+            netChart.update();
+        }
+        setInterval(updateNetwork, 2000);
+
+        // "Live" badge pulse
+        setInterval(() => {
+            const badge = document.getElementById('liveBadge');
+            badge.style.opacity = (badge.style.opacity === '0.4') ? '1' : '0.4';
+        }, 800);
+    });
+</script>
+{% endblock %}

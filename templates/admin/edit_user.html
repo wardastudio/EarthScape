@@ -1,0 +1,64 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Edit User | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-accent-blue text-decoration-none">Command Center</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_users') }}" class="text-accent-blue text-decoration-none">Users</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Edit {{ user.name }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center" data-aos="fade-up">
+    <div class="col-lg-8">
+        <div class="glass-card p-5">
+            <h3 class="text-white mb-4"><i class="bi bi-pencil-square me-2 text-accent-blue"></i>Edit User: {{ user.name }}</h3>
+
+            {% if error_message %}
+                <div class="alert alert-danger">{{ error_message }}</div>
+            {% endif %}
+
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label form-label-custom">Full Name</label>
+                        <input type="text" name="name" class="form-control form-control-glass" value="{{ user.name }}" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label form-label-custom">Email (read-only)</label>
+                        <input type="email" class="form-control form-control-glass" value="{{ user.email }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label form-label-custom">Role</label>
+                        <select name="role" class="form-control form-control-glass">
+                            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                            <option value="analyst" {% if user.role == 'analyst' %}selected{% endif %}>Analyst</option>
+                            <option value="researcher" {% if user.role == 'researcher' %}selected{% endif %}>Researcher</option>
+                            <option value="guest" {% if user.role == 'guest' %}selected{% endif %}>Guest</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label form-label-custom">Status</label>
+                        <select name="status" class="form-control form-control-glass">
+                            <option value="Active" {% if user.status == 'Active' %}selected{% endif %}>Active</option>
+                            <option value="Inactive" {% if user.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                            <option value="Pending" {% if user.status == 'Pending' %}selected{% endif %}>Pending</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12 text-end mt-4">
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-glass-secondary px-4 py-2 me-2">Cancel</a>
+                    <button type="submit" class="btn btn-glass-primary px-4 py-2">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

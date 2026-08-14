@@ -1,0 +1,51 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Activity Logs | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/analyst/dashboard" class="text-accent-blue text-decoration-none">Analyst Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Activity Logs</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4" data-aos="fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-white m-0"><i class="bi bi-clock-history me-2 text-accent-blue"></i>My Action History</h3>
+            <p class="text-secondary small m-0">Review your recent models runs, files downloads, and alerts logs.</p>
+        </div>
+        <button class="btn btn-glass-secondary" onclick="alert('Exporting action logs...');"><i class="bi bi-file-earmark-arrow-down me-1"></i> Export Logs</button>
+    </div>
+
+    <!-- Activity Log table -->
+    <div class="table-responsive">
+        <table class="table table-glass text-start align-middle">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Action</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td class="text-secondary small font-monospace">{{ log.time }}</td>
+                    <td class="text-white">{{ log.action }}</td>
+                    <td>
+                        <span class="badge badge-status {% if log.status == 'Success' %}success{% else %}warning{% endif %}">
+                            {{ log.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

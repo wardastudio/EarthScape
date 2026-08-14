@@ -1,0 +1,47 @@
+{% extends 'layouts/base.html' %}
+{% block title %}About | EarthScape Climate Agency{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4 about-content">
+
+<div class="row justify-content-center" data-aos="fade-up">
+    <div class="col-lg-10">
+        <div class="glass-card p-5">
+            <h1 class="text-white display-5 fw-bold mb-4">
+                </i>About EarthScape
+            </h1>
+            <p class="text-muted lead">EarthScape is a climate intelligence platform built to monitor, analyze, and predict climate patterns using big data and machine learning.</p>
+
+            <hr class="border-secondary my-4">
+
+            <h5 class="text-white"><i class="bi bi-bullseye me-2 text-accent-lime"></i>Our Mission</h5>
+            <p class="text-muted">To empower climate agencies, researchers, and policymakers with actionable insights derived from satellite, weather station, and environmental sensor data.</p>
+
+            <h5 class="text-white mt-4"><i class="bi bi-database me-2 text-accent-lime"></i>Data Sources</h5>
+            <ul class="text-muted">
+                <li>Satellite Imagery (Sentinel, Landsat, MODIS)</li>
+                <li>Weather Station Networks (NOAA, ECMWF)</li>
+                <li>Environmental Sensors (AQI, CO₂, Temperature)</li>
+                <li>Oceanographic Buoys (Marine Salinity, Sea Level)</li>
+            </ul>
+
+            <h5 class="text-white mt-4"><i class="bi bi-cpu me-2 text-accent-lime"></i>Technology Stack</h5>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge-status approved">Python</span>
+                <span class="badge-status approved">Flask</span>
+                <span class="badge-status approved">MongoDB</span>
+                <span class="badge-status approved">SQLite</span>
+                <span class="badge-status approved">Hadoop/HDFS</span>
+                <span class="badge-status approved">Machine Learning</span>
+                <span class="badge-status approved">Chart.js</span>
+                <span class="badge-status approved">Leaflet</span>
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <p class="text-muted small">EarthScape v2.6 — Built for the EarthScape Climate Agency. © {{ current_year }}</p>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

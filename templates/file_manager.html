@@ -1,0 +1,108 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}File Explorer | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/analyst/dashboard" class="text-accent-blue text-decoration-none">Analyst Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">File Explorer</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4" data-aos="fade-up">
+    <!-- Directories list -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-4"><i class="bi bi-folder2-open me-2 text-accent-blue"></i>Agency Data Directories</h4>
+            
+            <div class="row g-3 mb-4">
+                <!-- Folder 1 -->
+                <div class="col-md-4">
+                    <div class="glass-card p-3 fm-folder-card text-center" onclick="alert('Opening Satellite netcdf folder...');">
+                        <div class="display-5 text-warning mb-2"><i class="bi bi-folder-fill"></i></div>
+                        <h6 class="text-white m-0">Polar NetCDF Grids</h6>
+                        <small class="text-muted">14 files | 84.2 GB</small>
+                    </div>
+                </div>
+                <!-- Folder 2 -->
+                <div class="col-md-4">
+                    <div class="glass-card p-3 fm-folder-card text-center" onclick="alert('Opening canopy folder...');">
+                        <div class="display-5 text-accent-green mb-2"><i class="bi bi-folder-fill"></i></div>
+                        <h6 class="text-white m-0">Amazon GeoTIFFs</h6>
+                        <small class="text-muted">8 files | 34.1 GB</small>
+                    </div>
+                </div>
+                <!-- Folder 3 -->
+                <div class="col-md-4">
+                    <div class="glass-card p-3 fm-folder-card text-center" onclick="alert('Opening sensor logs folder...');">
+                        <div class="display-5 text-accent-blue mb-2"><i class="bi bi-folder-fill"></i></div>
+                        <h6 class="text-white m-0">Terrestrial Logs CSV</h6>
+                        <small class="text-muted">42 files | 850 MB</small>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="text-white mb-3">Recently Modified Files</h5>
+            <div class="table-responsive">
+                <table class="table table-glass text-start align-middle">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Size</th>
+                            <th>Date Modified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="cursor-pointer" onclick="alert('Selected file details updated in details panel.');">
+                            <td><i class="bi bi-file-earmark-bar-graph me-2 text-danger"></i> SST_anomaly_2026.nc</td>
+                            <td>4.2 GB</td>
+                            <td class="small text-muted">Today, 00:10</td>
+                        </tr>
+                        <tr class="cursor-pointer" onclick="alert('Selected file details updated.');">
+                            <td><i class="bi bi-file-earmark-image me-2 text-warning"></i> Amazon_deforestation_2026.tif</td>
+                            <td>12.8 GB</td>
+                            <td class="small text-muted">Yesterday, 18:42</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail panels -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-4"><i class="bi bi-info-circle me-2 text-accent-green"></i>File Details</h5>
+            
+            <div class="text-center py-4 mb-3 bg-secondary bg-opacity-10 rounded border border-secondary">
+                <div class="fm-file-icon text-danger mb-3"><i class="bi bi-file-earmark-zip"></i></div>
+                <h6 class="text-white">SST_anomaly_2026.nc</h6>
+                <small class="text-muted">NetCDF Data Format</small>
+            </div>
+
+            <div class="d-flex flex-column gap-3 mb-4">
+                <div class="d-flex justify-content-between border-bottom border-secondary pb-2 small">
+                    <span class="text-secondary">Spatial Grid size</span>
+                    <span class="text-white fw-bold">1440 x 720</span>
+                </div>
+                <div class="d-flex justify-content-between border-bottom border-secondary pb-2 small">
+                    <span class="text-secondary">File size</span>
+                    <span class="text-white fw-bold">4.2 GB</span>
+                </div>
+                <div class="d-flex justify-content-between small">
+                    <span class="text-secondary">Validation status</span>
+                    <span class="text-accent-green fw-bold">Approved</span>
+                </div>
+            </div>
+
+            <button class="btn btn-glass-success w-100" onclick="alert('Downloading SST_anomaly_2026.nc...');">
+                <i class="bi bi-download me-1"></i> Download File
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

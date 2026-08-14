@@ -1,0 +1,118 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Notifications Management | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-lime text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-accent-lime text-decoration-none">Admin Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Notifications</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <!-- Left: Broadcast Alert Form -->
+    <div class="col-lg-5">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-3"><i class="bi bi-megaphone me-2 text-accent-lime"></i>Broadcast Climate Alert</h4>
+            <p class="text-muted small">Transmit a priority weather warning or sensor telemetry alert across all analyst dashboards.</p>
+
+            <form method="POST" action="{{ url_for('admin_notifications') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <div class="mb-3">
+                    <label class="form-label">Alert Title</label>
+                    <input type="text" name="title" class="form-control-glass" placeholder="Extreme Heat Spike: India Grid-4B" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Priority Level</label>
+                    <select name="priority" class="form-control-glass">
+                        <option value="Critical">Critical (Red Warning)</option>
+                        <option value="Watch">Watch (Orange)</option>
+                        <option value="Info">Info (Blue)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Target Audience</label>
+                    <select name="audience" class="form-control-glass">
+                        <option>All Agency Terminals</option>
+                        <option>Analysts Only</option>
+                        <option>Admins Only</option>
+                        <option>Public Dashboards</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Notification Text</label>
+                    <textarea name="message" class="form-control-glass" rows="4" placeholder="Specify parameters, telemetry thresholds exceeded, or instructions..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Alert</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right: Active Transmissions -->
+    <div class="col-lg-7">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-broadcast me-2 text-accent-lime"></i>Active Transmissions</h5>
+
+            <!-- Notification List -->
+            <div class="d-flex flex-column gap-3">
+
+                <div class="glass-panel p-3 d-flex justify-content-between align-items-start" style="border-left: 3px solid #ef4444;">
+                    <div>
+                        <div class="fw-semibold text-white">Extreme Heat Spike: India Grid-4B</div>
+                        <small class="text-muted">Critical • 2 hours ago • All Agency Terminals</small>
+                        <p class="text-white-50 small mb-0 mt-1">Temperature exceeded 48°C – immediate cooling measures required.</p>
+                    </div>
+                    <span class="badge-status rejected">Active</span>
+                </div>
+
+                <div class="glass-panel p-3 d-flex justify-content-between align-items-start" style="border-left: 3px solid #f59e0b;">
+                    <div>
+                        <div class="fw-semibold text-white">Pacific Gyre Plastic Accumulation Update</div>
+                        <small class="text-muted">Watch • 5 hours ago • Analysts Only</small>
+                        <p class="text-white-50 small mb-0 mt-1">Concentration increased by 12% in the last 72 hours.</p>
+                    </div>
+                    <span class="badge-status pending">Active</span>
+                </div>
+
+                <div class="glass-panel p-3 d-flex justify-content-between align-items-start" style="border-left: 3px solid #60a5fa;">
+                    <div>
+                        <div class="fw-semibold text-white">Solar Flare Impact Forecast</div>
+                        <small class="text-muted">Info • 1 day ago • All Agency Terminals</small>
+                        <p class="text-white-50 small mb-0 mt-1">Minor communication disruptions expected across high latitudes.</p>
+                    </div>
+                    <span class="badge-status approved">Resolved</span>
+                </div>
+
+                <div class="glass-panel p-3 d-flex justify-content-between align-items-start" style="border-left: 3px solid #ef4444;">
+                    <div>
+                        <div class="fw-semibold text-white">Antarctic Ice Shelf Fracture</div>
+                        <small class="text-muted">Critical • 3 days ago • All Agency Terminals</small>
+                        <p class="text-white-50 small mb-0 mt-1">Large calving event detected – satellite imagery available for review.</p>
+                    </div>
+                    <span class="badge-status rejected">Active</span>
+                </div>
+
+                <div class="glass-panel p-3 d-flex justify-content-between align-items-start" style="border-left: 3px solid #f59e0b;">
+                    <div>
+                        <div class="fw-semibold text-white">Amazon Deforestation Alert</div>
+                        <small class="text-muted">Watch • 4 days ago • Analysts Only</small>
+                        <p class="text-white-50 small mb-0 mt-1">Monthly loss rate exceeded 1,200 km² – urgent monitoring required.</p>
+                    </div>
+                    <span class="badge-status pending">Active</span>
+                </div>
+            </div>
+
+            <div class="mt-3 text-center">
+                <small class="text-muted">Showing 5 of 12 active transmissions</small>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Loader Showcase | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/analyst/dashboard" class="text-accent-blue text-decoration-none">Analyst Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Loader Showcase</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4" data-aos="fade-up">
+    <!-- Inline telemetry spinners -->
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-arrow-repeat me-2 text-accent-blue"></i>Inline Signal Processors</h5>
+            <p class="text-secondary small mb-4">Spinners used during sensor handshakes, database checks, or parameter re-plots.</p>
+            
+            <div class="d-flex align-items-center gap-4 flex-wrap">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="spinner-grow text-warning" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="spinner-grow text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skeleton loaders -->
+    <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-3"><i class="bi bi-grid-fill me-2 text-accent-green"></i>Skeleton Layout Placeholders</h5>
+            <p class="text-secondary small mb-4">Skeleton pulse boxes used while streaming geo-spatial coordinates layers.</p>
+            
+            <div class="d-flex flex-column gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="skeleton-box" style="width: 40px; height: 40px; border-radius: 50%;"></div>
+                    <div class="flex-grow-1">
+                        <div class="skeleton-box" style="width: 60%; height: 12px; margin-bottom: 6px;"></div>
+                        <div class="skeleton-box" style="width: 40%; height: 8px;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-box" style="height: 60px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

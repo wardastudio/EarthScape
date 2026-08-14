@@ -1,0 +1,367 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Analyst Dashboard | EarthScape{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Analyst Workspace</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<!-- Live system status banner -->
+<div class="glass-card p-3 mb-4 d-flex align-items-center" style="border-left: 4px solid var(--accent-green);">
+    <span class="badge bg-glass-success me-3 px-3 py-1">LIVE STATUS</span>
+    <div>
+        <span class="text-white fw-semibold">Climate Intelligence Stream Active</span>
+        <span class="text-muted ms-2 small">Last data sync: {{ current_time }}</span>
+    </div>
+</div>
+
+<!-- ===== EXECUTIVE KPI ROW ===== -->
+<div class="row g-4 mb-4" data-aos="fade-up">
+    <div class="col-xl-3 col-md-6">
+        <div class="glass-card kpi-card kpi-primary p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small text-uppercase">Avg Temperature</div>
+                    <h3 class="display-6 fw-bold my-1 text-white">{{ stats.avg_temperature }} <small>°C</small></h3>
+                    <small class="text-accent-blue">Unified climate dataset</small>
+                </div>
+                <div class="kpi-icon text-accent-blue"><i class="bi bi-thermometer-half"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="glass-card kpi-card kpi-success p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small text-uppercase">Avg Humidity</div>
+                    <h3 class="display-6 fw-bold my-1 text-white">{{ stats.avg_humidity }} <small>%</small></h3>
+                    <small class="text-accent-green">Environmental sensors</small>
+                </div>
+                <div class="kpi-icon text-accent-green"><i class="bi bi-droplet"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="glass-card kpi-card kpi-warning p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small text-uppercase">Avg Rainfall</div>
+                    <h3 class="display-6 fw-bold my-1 text-white">{{ stats.avg_rainfall }} <small>mm</small></h3>
+                    <small class="text-warning">Last 24 hours</small>
+                </div>
+                <div class="kpi-icon text-warning"><i class="bi bi-cloud-rain"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="glass-card kpi-card kpi-danger p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small text-uppercase">Avg Wind Speed</div>
+                    <h3 class="display-6 fw-bold my-1 text-white">{{ stats.avg_wind_speed }} <small>km/h</small></h3>
+                    <small class="text-danger">Across monitored stations</small>
+                </div>
+                <div class="kpi-icon text-danger"><i class="bi bi-wind"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== CLIMATE & AIR QUALITY ===== -->
+<div class="row g-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-4"><i class="bi bi-cloud-sun me-2"></i>Climate & Air Quality Overview</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="glass-card p-3 text-center">
+                        <div class="text-muted small">Air Quality (AQI)</div>
+                        <div class="fs-4 fw-bold text-white">{{ stats.avg_aqi }}</div>
+                        <div class="small text-accent-green">Good</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-card p-3 text-center">
+                        <div class="text-muted small">CO₂ (ppm)</div>
+                        <div class="fs-4 fw-bold text-white">{{ stats.avg_co2 }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-card p-3 text-center">
+                        <div class="text-muted small">Climate Severity</div>
+                        <div class="fs-4 fw-bold text-white">
+                            {{ stats.climate_severity|default('Moderate') }}
+                        </div>
+                        <div class="small text-muted">Based on station aggregates</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-card p-3 text-center">
+                        <div class="text-muted small">Monitoring Stations</div>
+                        <div class="fs-4 fw-bold text-white">{{ stats.hadoop_status.get('stations_processed', 128) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white mb-3"><i class="bi bi-graph-up-arrow me-2"></i>Climate Trends</h5>
+            <div style="height: 220px;">
+                <canvas id="analystClimateTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== RISK SUMMARY (Flood & Heatwave) ===== -->
+<div class="row g-4 mb-4" data-aos="fade-up" data-aos-delay="150">
+    <!-- Flood Risk -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white"><i class="bi bi-droplet me-2"></i>Flood Risk Distribution</h5>
+            <div class="mt-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Low</span>
+                    <span>{{ stats.flood_risk_distribution.low }}%</span>
+                </div>
+                <div class="progress bg-secondary" style="height:8px;">
+                    <div class="progress-bar bg-accent-green" role="progressbar"
+                         data-progress="{{ stats.flood_risk_distribution.low }}"
+                         aria-valuenow="{{ stats.flood_risk_distribution.low }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between mb-2 mt-3">
+                    <span>Medium</span>
+                    <span>{{ stats.flood_risk_distribution.medium }}%</span>
+                </div>
+                <div class="progress bg-secondary" style="height:8px;">
+                    <div class="progress-bar bg-warning" role="progressbar"
+                         data-progress="{{ stats.flood_risk_distribution.medium }}"
+                         aria-valuenow="{{ stats.flood_risk_distribution.medium }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between mb-2 mt-3">
+                    <span>High</span>
+                    <span>{{ stats.flood_risk_distribution.high }}%</span>
+                </div>
+                <div class="progress bg-secondary" style="height:8px;">
+                    <div class="progress-bar bg-danger" role="progressbar"
+                         data-progress="{{ stats.flood_risk_distribution.high }}"
+                         aria-valuenow="{{ stats.flood_risk_distribution.high }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="mt-3">
+                    <strong>Dominant Risk:</strong> {{ stats.flood_risk_distribution.dominant }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Heatwave Risk -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="text-white"><i class="bi bi-thermometer-sun me-2"></i>Heatwave Risk</h5>
+            <div class="mt-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>No Risk</span>
+                    <span>{{ stats.heatwave_risk_distribution.no_risk }}%</span>
+                </div>
+                <div class="progress bg-secondary" style="height:8px;">
+                    <div class="progress-bar bg-accent-blue" role="progressbar"
+                         data-progress="{{ stats.heatwave_risk_distribution.no_risk }}"
+                         aria-valuenow="{{ stats.heatwave_risk_distribution.no_risk }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between mb-2 mt-3">
+                    <span>At Risk</span>
+                    <span>{{ stats.heatwave_risk_distribution.at_risk }}%</span>
+                </div>
+                <div class="progress bg-secondary" style="height:8px;">
+                    <div class="progress-bar bg-danger" role="progressbar"
+                         data-progress="{{ stats.heatwave_risk_distribution.at_risk }}"
+                         aria-valuenow="{{ stats.heatwave_risk_distribution.at_risk }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="mt-3">
+                    <strong>Total Assessments:</strong> {{ stats.total_assessments }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tiny script to apply the widths (put this at the end of the block) -->
+<script>
+    (function() {
+        document.querySelectorAll('[data-progress]').forEach(function(bar) {
+            bar.style.width = bar.getAttribute('data-progress') + '%';
+        });
+    })();
+</script>
+<!-- ===== ML MODEL INVENTORY & PREDICTIONS ===== -->
+<div class="row g-4 mb-4" data-aos="fade-up">
+    <div class="col-lg-7">
+        <div class="glass-card p-4 h-100">
+            <h5 class="mb-4 text-white"><i class="bi bi-cpu me-2"></i>Available ML Models</h5>
+            <div class="row g-4">
+                {% for model in stats.models_inventory %}
+                <div class="col-md-6">
+                    <div class="glass-card kpi-card p-4 h-100">
+                        <h5>{{ model.icon }} {{ model.name }}</h5>
+                        <p class="text-muted small">Status: <span class="badge badge-status {% if model.status == 'Ready' %}active{% else %}pending{% endif %}">{{ model.status }}</span></p>
+                        <p class="text-muted small">Algorithm: {{ model.algorithm }}</p>
+                        <!-- FIXED: strip " prediction" to get correct route name -->
+                        <a href="{{ url_for('predict_' + model.name.lower().replace(' prediction','').replace(' ','_')) }}" class="btn btn-glass-primary btn-sm mt-2">
+                            Run Prediction →
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="glass-card p-4 h-100">
+            <h5 class="mb-3 text-white"><i class="bi bi-lightning me-2"></i>Recent Predictions</h5>
+            {% if stats.recent_predictions %}
+                {% for pred in stats.recent_predictions[-5:] %}
+                <div class="d-flex justify-content-between py-2 border-bottom border-secondary">
+                    <span>{{ pred.type | capitalize }} – {{ pred.value }}</span>
+                    <span class="text-muted small">{{ pred.timestamp }}</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No predictions yet. Use the tools to generate results.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ===== ENVIRONMENTAL TELEMETRY (Compact) ===== -->
+<div class="glass-card p-4 mb-4" data-aos="fade-up">
+    <h5 class="mb-4 text-white"><i class="bi bi-tree me-2"></i>Environmental Telemetry Snapshot</h5>
+    <div class="row g-3">
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center">
+                <div class="text-muted small">CO₂ (ppm)</div>
+                <div class="fs-5 fw-bold text-white">{{ stats.avg_co2 }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center">
+                <div class="text-muted small">Temperature (°C)</div>
+                <div class="fs-5 fw-bold text-white">{{ stats.avg_temperature }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center">
+                <div class="text-muted small">Humidity (%)</div>
+                <div class="fs-5 fw-bold text-white">{{ stats.avg_humidity }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center">
+                <div class="text-muted small">Rainfall (mm)</div>
+                <div class="fs-5 fw-bold text-white">{{ stats.avg_rainfall }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center">
+                <div class="text-muted small">AQI</div>
+                <div class="fs-5 fw-bold text-white">{{ stats.avg_aqi }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center">
+                <div class="text-muted small">Wind Speed</div>
+                <div class="fs-5 fw-bold text-white">{{ stats.avg_wind_speed }} km/h</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center">
+                <div class="text-muted small">Carbon Emission</div>
+                <div class="fs-5 fw-bold text-white">{{ stats.avg_carbon_emission }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center">
+                <div class="text-muted small">Flood Alerts</div>
+                <div class="fs-5 fw-bold text-white">{{ stats.flood_alerts }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== QUICK ACTIONS ===== -->
+<div class="row g-4 mb-4" data-aos="fade-up">
+    <div class="col-lg-12">
+        <div class="glass-card p-4">
+            <h5 class="mb-3 text-white"><i class="bi bi-lightning-charge me-2"></i>Quick Actions</h5>
+            <div class="d-flex flex-wrap gap-3">
+                <a href="{{ url_for('predict_carbon') }}" class="btn btn-glass-primary">🌳 Carbon Prediction</a>
+                <a href="{{ url_for('predict_flood') }}" class="btn btn-glass-primary">🌊 Flood Prediction</a>
+                <a href="{{ url_for('predict_heatwave') }}" class="btn btn-glass-primary">🔥 Heatwave Prediction</a>
+                <a href="{{ url_for('analyst_ml_insights') }}" class="btn btn-glass-secondary">🧠 ML Insights</a>
+                <a href="{{ url_for('analyst_anomalies') }}" class="btn btn-glass-secondary">⚠️ Anomaly Detection</a>
+                <a href="{{ url_for('analyst_reports') }}" class="btn btn-glass-secondary">📄 Reports</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+{{ super() }}
+<script>
+// ---------- Climate Trend Mini Chart ----------
+let analystChart = null;
+const ctx = document.getElementById('analystClimateTrendChart');
+if (ctx) {
+    const context = ctx.getContext('2d');
+    function fetchAnalystChartData(metric = 'temperature') {
+        fetch('/api/charts')
+            .then(res => res.json())
+            .then(data => {
+                const dataset = data[metric] || data['temperature'];
+                if (!dataset) return;
+                if (analystChart) analystChart.destroy();
+                analystChart = new Chart(context, {
+                    type: 'line',
+                    data: {
+                        labels: dataset.labels,
+                        datasets: [{
+                            label: metric.charAt(0).toUpperCase() + metric.slice(1),
+                            data: dataset.values,
+                            borderColor: '#44F3BF',
+                            backgroundColor: 'rgba(68, 243, 191, 0.1)',
+                            tension: 0.4,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#A9B3C8' } }
+                        },
+                        scales: {
+                            y: {
+                                grid: { color: 'rgba(255,255,255,0.06)' },
+                                ticks: { color: '#A9B3C8' }
+                            },
+                            x: {
+                                grid: { color: 'rgba(255,255,255,0.06)' },
+                                ticks: { color: '#A9B3C8' }
+                            }
+                        }
+                    }
+                });
+            });
+    }
+    fetchAnalystChartData('temperature');
+}
+</script>
+{% endblock %}

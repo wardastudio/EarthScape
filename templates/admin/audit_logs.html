@@ -1,0 +1,90 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}System Audit Logs | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-accent-blue text-decoration-none">Admin Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Audit Logs</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4" data-aos="fade-up">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h3 class="text-white m-0"><i class="bi bi-journal-text me-2 text-accent-blue"></i>Security Audit Trail</h3>
+            <p class="text-secondary small m-0">Review system events, file access metrics, and API boundary authorization events.</p>
+        </div>
+        <div>
+            <button class="btn btn-glass-secondary" onclick="alert('Export logs to secure CSV archive.');"><i class="bi bi-file-earmark-arrow-down me-1"></i> Export Logs</button>
+        </div>
+    </div>
+
+    <!-- Search/Filters -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-5">
+            <input type="text" class="form-control form-control-glass" placeholder="Search by user email, target node, or action keywords...">
+        </div>
+        <div class="col-md-3">
+            <select class="form-control form-control-glass">
+                <option>All Security Levels</option>
+                <option>Success (Info)</option>
+                <option>Warning (Alerts)</option>
+                <option>Critical (Failures)</option>
+            </select>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <button class="btn btn-glass-secondary px-3"><i class="bi bi-funnel me-1"></i> Date Filter</button>
+            <button class="btn btn-glass-secondary text-danger px-3" onclick="confirm('Clear local log view? (Archive will remain on cluster)');">Clear View</button>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="table-responsive">
+        <table class="table table-glass text-start align-middle">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Officer Node</th>
+                    <th>Action String</th>
+                    <th>Origin IP</th>
+                    <th>Verification</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td class="text-secondary small font-monospace">{{ log.time }}</td>
+                    <td class="fw-semibold text-white">{{ log.user }}</td>
+                    <td class="text-muted" style="font-size:0.85rem;">{{ log.action }}</td>
+                    <td class="text-secondary small font-monospace">{{ log.ip }}</td>
+                    <td>
+                        <span class="badge badge-status {% if log.status == 'Success' %}success{% elif log.status == 'Warning' %}warning{% else %}danger{% endif %}">
+                            {{ log.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 gap-3">
+        <span class="text-muted small">Displaying events 1-5 of 124,802</span>
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm m-0">
+                <li class="page-item disabled"><a class="page-link bg-transparent border-secondary text-muted" href="#">Prev</a></li>
+                <li class="page-item active"><a class="page-link bg-glass-primary border-secondary text-white" href="#">1</a></li>
+                <li class="page-item"><a class="page-link bg-transparent border-secondary text-secondary" href="#">2</a></li>
+                <li class="page-item"><a class="page-link bg-transparent border-secondary text-secondary" href="#">3</a></li>
+                <li class="page-item"><a class="page-link bg-transparent border-secondary text-secondary" href="#">Next</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

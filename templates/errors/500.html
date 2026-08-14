@@ -1,0 +1,12 @@
+{% extends 'layouts/base.html' %}
+{% set hide_sidebar = True %}
+{% set hide_footer = True %}
+{% block title %}Server Error | Earthscape Climate Agency{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-1 text-danger">500</h1>
+    <h3 class="text-white">Something went wrong on the climate platform.</h3>
+    <p class="text-secondary">Please retry shortly or contact the systems administrator.</p>
+    <a href="/" class="btn btn-glass-primary">Return Home</a>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'layouts/base.html' %}
+{% set hide_sidebar = True %}
+{% set hide_navbar = True %}
+{% set hide_footer = True %}
+
+{% block title %}Orbit Error 404 | Earthscape Climate Agency{% endblock %}
+
+{% block content %}
+<div class="row align-items-center justify-content-center min-vh-100 py-5">
+    <div class="col-md-6 text-center" data-aos="zoom-in">
+        <div class="glass-card p-5 shadow-lg border border-secondary-subtle">
+            <!-- Animated custom satellite floating -->
+            <div class="display-1 text-accent-blue mb-4 animate__animated animate__pulse animate__infinite" style="display:inline-block;">
+                <i class="bi bi-satellite" style="font-size: 5rem;"></i>
+            </div>
+            <h1 class="text-white mb-2 display-4">Orbit Error 404</h1>
+            <h5 class="text-secondary mb-4 font-weight-light">Target page has drifted out of communication range.</h5>
+            <p class="text-muted mb-4 small">
+                The satellite coordinates you requested did not match any files hosted on our environmental nodes. The system could have been relocated or offline.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="/" class="btn btn-glass-success px-4 py-2">Return to Earth Base</a>
+                <a href="javascript:history.back();" class="btn btn-glass-secondary px-4 py-2">Previous Orbit</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

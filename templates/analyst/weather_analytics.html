@@ -1,0 +1,223 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Weather Analytics | EarthScape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-accent-lime text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Weather Analytics</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <!-- Header -->
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="text-white mb-1"><i class="bi bi-cloud-sun me-2 text-accent-lime"></i>Weather Analytics</h4>
+                    <p class="text-muted small">Real‑time telemetry and historical climate patterns</p>
+                </div>
+                <span class="badge-status approved"><i class="bi bi-satellite me-1"></i>Live Telemetry</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="col-md-3 col-6">
+        <div class="stat-card text-center">
+            <div class="stat-label">Avg Temperature</div>
+            <div class="stat-number">{{ stats.avg_temperature|default(28.95) }}°C</div>
+            <small class="text-muted">+1.2°C vs last week</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card text-center">
+            <div class="stat-label">Avg Humidity</div>
+            <div class="stat-number">{{ stats.avg_humidity|default(61.8) }}%</div>
+            <small class="text-muted">-3% vs last week</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card text-center">
+            <div class="stat-label">Avg Rainfall</div>
+            <div class="stat-number">{{ stats.avg_rainfall|default(69.8) }} mm</div>
+            <small class="text-muted">+5.2mm vs last week</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card text-center">
+            <div class="stat-label">Wind Speed</div>
+            <div class="stat-number">{{ stats.avg_wind_speed|default(38.9) }} km/h</div>
+            <small class="text-muted">-2.1 km/h vs last week</small>
+        </div>
+    </div>
+
+    <!-- Temperature & Humidity Trends -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-graph-up me-2 text-accent-lime"></i>Temperature & Humidity Trends</h5>
+            <div style="height: 250px;">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rainfall & Wind -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-droplet me-2 text-accent-lime"></i>Rainfall & Wind</h5>
+            <div style="height: 250px;">
+                <canvas id="rainWindChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Weather Observations -->
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="text-white mb-3"><i class="bi bi-list-ul me-2 text-accent-lime"></i>Recent Observations</h5>
+            <div class="table-responsive">
+                <table class="table table-glass">
+                    <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th>Temperature</th>
+                            <th>Humidity</th>
+                            <th>Rainfall</th>
+                            <th>Wind</th>
+                            <th>Condition</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Manaus</td>
+                            <td>32.4°C</td>
+                            <td>78%</td>
+                            <td>12 mm</td>
+                            <td>15 km/h</td>
+                            <td><span class="badge-status approved">Moderate</span></td>
+                        </tr>
+                        <tr>
+                            <td>Lagos</td>
+                            <td>29.1°C</td>
+                            <td>85%</td>
+                            <td>42 mm</td>
+                            <td>22 km/h</td>
+                            <td><span class="badge-status pending">Heavy Rain</span></td>
+                        </tr>
+                        <tr>
+                            <td>Sydney</td>
+                            <td>22.7°C</td>
+                            <td>62%</td>
+                            <td>0 mm</td>
+                            <td>8 km/h</td>
+                            <td><span class="badge-status approved">Clear</span></td>
+                        </tr>
+                        <tr>
+                            <td>Quebec</td>
+                            <td>18.3°C</td>
+                            <td>55%</td>
+                            <td>0 mm</td>
+                            <td>12 km/h</td>
+                            <td><span class="badge-status approved">Clear</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block js_extra %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Temperature & Humidity Trend
+        const ctx1 = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Temperature (°C)',
+                    data: [22, 24, 26, 28, 30, 32, 33, 32, 30, 28, 25, 23],
+                    borderColor: '#fbbf24',
+                    backgroundColor: 'rgba(251,191,36,0.05)',
+                    fill: true,
+                    tension: 0.3,
+                }, {
+                    label: 'Humidity (%)',
+                    data: [70, 68, 65, 62, 60, 58, 55, 57, 60, 63, 68, 72],
+                    borderColor: '#5eead4',
+                    backgroundColor: 'rgba(94,234,212,0.05)',
+                    fill: true,
+                    tension: 0.3,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#8d9a91', font: { size: 11 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: { color: '#8d9a91', font: { size: 10 } },
+                        grid: { color: 'rgba(255,255,255,0.04)' }
+                    },
+                    x: {
+                        ticks: { color: '#8d9a91', font: { size: 10 } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Rainfall & Wind
+        const ctx2 = document.getElementById('rainWindChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Rainfall (mm)',
+                    data: [80, 90, 110, 130, 150, 160, 140, 120, 100, 90, 85, 75],
+                    backgroundColor: 'rgba(96,165,250,0.6)',
+                    borderColor: '#60a5fa',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#8d9a91', font: { size: 11 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#8d9a91', font: { size: 10 } },
+                        grid: { color: 'rgba(255,255,255,0.04)' }
+                    },
+                    x: {
+                        ticks: { color: '#8d9a91', font: { size: 10 } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

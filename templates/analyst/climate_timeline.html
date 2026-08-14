@@ -1,0 +1,59 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Climate Timeline | Earthscape Climate Agency{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/" class="text-accent-blue text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/analyst/dashboard" class="text-accent-blue text-decoration-none">Analyst Dashboard</a></li>
+        <li class="breadcrumb-item active text-white" aria-current="page">Climate Timeline</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4" data-aos="fade-up">
+    <div class="col-md-12">
+        <div class="glass-card p-4 text-center">
+            <h3 class="text-white mb-2"><i class="bi bi-clock-history me-2 text-accent-blue"></i>Chronology of Earth System Changes</h3>
+            <p class="text-secondary small m-0">Scrollable history from pre-industrial markers to projected future climate thresholds.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center" data-aos="fade-up" data-aos-delay="100">
+    <div class="col-lg-10">
+        <div class="timeline-classic">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="glass-card p-4">
+                    <h5 class="text-white">Pre-Industrial Baseline (1880)</h5>
+                    <p class="text-secondary small m-0">Atmospheric CO2 concentrations balanced at approximately 280 ppm. Average temperature anomaly defined as 0.00°C.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot green"></div>
+                <div class="glass-card p-4">
+                    <h5 class="text-white">Satellite Observation Era Begins (1979)</h5>
+                    <p class="text-secondary small m-0">Space agency radar programs begin tracking polar ice sheet elevation profiles and ocean surface temperatures continuously.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot yellow"></div>
+                <div class="glass-card p-4">
+                    <h5 class="text-white">The Paris Climate Agreement (2015)</h5>
+                    <p class="text-secondary small m-0">International treaty targets global average warming limits below +1.5°C to avert critical ecosystem collapses.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot red"></div>
+                <div class="glass-card p-4">
+                    <h5 class="text-white">Projected Climate Tipping Horizons (2050)</h5>
+                    <p class="text-secondary small m-0">Under unchecked RCP 8.5 scenarios, global ocean warmth anomalies are modeled to exceed +2.6°C, initiating rapid arctic sheet melting cycles.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
