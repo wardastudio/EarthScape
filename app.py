@@ -8,17 +8,7 @@ import time
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List
-from routes.auth_routes import auth_bp
-from routes.auth_routes import auth_bp
-from routes.hadoop_routes import hadoop_bp
-from routes.weather_routes import weather_bp
-from routes.predictions_routes import predictions_bp
-from routes.analytics_routes import analytics_bp
-from routes.alerts_routes import alerts_bp
-from routes.admin_routes import admin_bp
-from routes.profile_routes import profile_bp
-from routes.satellite_routes import satellite_bp
-_cached_df = None
+
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for, g, flash
 
 try:
@@ -54,6 +44,21 @@ try:
 except Exception:
     ObjectId = None
 
+# ===== IMPORT ALL BLUEPRINTS =====
+from routes.auth_routes import auth_bp
+from routes.hadoop_routes import hadoop_bp
+from routes.weather_routes import weather_bp
+from routes.predictions_routes import predictions_bp
+from routes.analytics_routes import analytics_bp
+from routes.alerts_routes import alerts_bp
+from routes.admin_routes import admin_bp
+from routes.profile_routes import profile_bp
+from routes.satellite_routes import satellite_bp
+
+# ===== Global cache for dataset =====
+_cached_df = None
+
+# ===== App Initialization =====
 app = Flask(__name__)
 
 # ===== REGISTER ALL BLUEPRINTS =====
@@ -232,9 +237,6 @@ def init_db() -> None:
 
 
 init_db()
-
-
-
 
 
 # ===== Helper functions =====
@@ -590,7 +592,7 @@ def load_dataset() -> pd.DataFrame:
             if '_id' in df.columns:
                 df.drop('_id', axis=1, inplace=True)
             logger.info(f"Loaded {len(df)} rows from MongoDB collection '{collection_name}'")
-            _cached_df = df  # Cache the result
+            _cached_df = df
             return df
         except Exception as exc:
             logger.exception("MongoDB dataset load failed: %s", exc)
@@ -600,13 +602,13 @@ def load_dataset() -> pd.DataFrame:
     try:
         df = pd.read_csv(DATASET_PATH)
         logger.info(f"Loaded {len(df)} rows from local CSV fallback")
-        _cached_df = df  # Cache the result
+        _cached_df = df
         return df
     except Exception as exc:
         logger.exception("Unable to read dataset: %s", exc)
         df = build_sample_dataset()
         df.to_csv(DATASET_PATH, index=False)
-        _cached_df = df  # Cache the result
+        _cached_df = df
         return df
 
 
@@ -740,7 +742,7 @@ def get_dataset_catalog() -> List[Dict[str, Any]]:
             for index, doc in enumerate(docs, start=2):
                 entries.append({
                     "id": f"DS-{index:03d}",
-                    "db_id": str(doc["_id"]),          # <-- ADD THIS
+                    "db_id": str(doc["_id"]),
                     "name": doc.get("name", "Stored Dataset"),
                     "resolution": "Variable",
                     "size": "N/A",
@@ -753,12 +755,11 @@ def get_dataset_catalog() -> List[Dict[str, Any]]:
             logger.warning("MongoDB dataset lookup failed: %s", exc)
     else:
         with sqlite3.connect(DB_PATH) as conn:
-            # Select the id column too
             rows = conn.execute("SELECT id, name, source, status, format, created_at FROM datasets ORDER BY id DESC").fetchall()
         for index, row in enumerate(rows, start=2):
             entries.append({
                 "id": f"DS-{index:03d}",
-                "db_id": row[0],                       # <-- ADD THIS
+                "db_id": row[0],
                 "name": row[1],
                 "resolution": "Variable",
                 "size": "N/A",
@@ -771,13 +772,9 @@ def get_dataset_catalog() -> List[Dict[str, Any]]:
         if file_path.suffix.lower().lstrip(".") not in ALLOWED_EXTENSIONS:
             continue
         stat = file_path.stat()
-        # Optionally check if file already in DB (by source) and skip if so
-        # existing = next((e for e in entries if e.get("source") == str(file_path)), None)
-        # if existing:
-        #     continue
         entries.append({
             "id": f"DS-{len(entries)+1:03d}",
-            "db_id": None,  # No DB record yet for this file (unless we matched above)
+            "db_id": None,
             "name": file_path.stem.replace("_", " ").title(),
             "resolution": "Variable",
             "size": f"{round(stat.st_size / 1024, 1)} KB",
@@ -825,7 +822,6 @@ def get_notifications(limit: int = 10) -> List[Dict[str, Any]]:
     return [{"title": row[0], "message": row[1], "level": row[2], "created_at": row[3]} for row in rows]
 
 # ----- Dashboard stats -----
-@lru_cache(maxsize=1)
 def get_dashboard_stats() -> Dict[str, Any]:
     df = load_dataset()
     missing_pct = round(df.isnull().mean().mean() * 100, 2)
@@ -928,9 +924,7 @@ def get_dashboard_stats() -> Dict[str, Any]:
         "models_inventory": models_inventory,
     }
 
-get_dashboard_stats.cache_clear = lambda: None
 
-@lru_cache(maxsize=1)
 def get_chart_payload() -> Dict[str, Any]:
     df = load_dataset()
     monthly = df.groupby(df.index // 10).agg(
@@ -951,8 +945,12 @@ def get_chart_payload() -> Dict[str, Any]:
         "weather_distribution": {"labels": [cond for cond in df["WeatherCondition"].value_counts().index.tolist()], "values": [int(v) for v in df["WeatherCondition"].value_counts().tolist()]},
     }
 
+
 def clear_caches() -> None:
-    get_chart_payload.cache_clear()
+    global _cached_df
+    _cached_df = None
+    logger.info("Dataset cache cleared")
+
 
 # ===== Auth Helpers =====
 class UserProxy:
@@ -1002,7 +1000,7 @@ def inject_global_vars():
         "unread_notifications_count": len(stats["alerts"]),
         "current_year": dt.datetime.now().year,
         "current_time": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "current_user": user,  # UserProxy — supports both .role and ['role']
+        "current_user": user,
         "csrf_token": generate_csrf_token(),
     }
 
@@ -1011,8 +1009,7 @@ def inject_global_vars():
 def before_request():
     """Start timing and ensure session user is fresh."""
     g.start_time = time.time()
-    # Force refresh of session user
-    get_current_user()  # this updates session if needed
+    get_current_user()
 
 @app.after_request
 def after_request(response):
@@ -1030,7 +1027,6 @@ def after_request(response):
 
 @app.before_request
 def enforce_access_control():
-    # Exempt static, uploads, API, and public routes
     if request.path.startswith("/static") or request.path.startswith("/uploads"):
         return None
     if request.path.startswith("/api"):
@@ -1038,7 +1034,6 @@ def enforce_access_control():
     if request.path in {"/", "/about", "/contact", "/faq", "/help", "/landing", "/login", "/register", "/forgot-password", "/reset-password", "/unauthorized", "/logout", "/debug-session"}:
         return None
 
-    # CSRF for state-changing methods
     if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
         exempt_paths = {"/login", "/register", "/logout"}
         if request.path in exempt_paths:
@@ -1048,45 +1043,38 @@ def enforce_access_control():
         if not expected_token or not provided_token or provided_token != expected_token:
             return jsonify({"error": "Invalid CSRF token"}), 400
 
-    # 1. AUTHENTICATION FIRST
     current_user = get_current_user()
     if not current_user:
         return redirect(url_for("login"))
 
     role = (current_user.get("role") or "").strip().lower()
 
-    # 2. ROLE CHECKS
-    # Admin only
     admin_only_paths = {"/admin/dashboard", "/admin/users", "/admin/roles", "/admin/monitoring", "/admin/audit-logs", "/admin/backups", "/admin/settings"}
     if request.path in admin_only_paths or any(request.path.startswith(p) for p in ["/admin/users/", "/admin/security"]):
         if role != "admin":
             return redirect(url_for("unauthorized"))
         return None
 
-    # Admin/Analyst (datasets, reports)
     analyst_admin_paths = {"/admin/datasets", "/admin/datasets/upload", "/admin/datasets/approval", "/admin/reports"}
     if request.path in analyst_admin_paths or request.path.startswith("/admin/datasets/"):
         if role not in {"admin", "analyst"}:
             return redirect(url_for("unauthorized"))
         return None
 
-    # Analyst-only
     analyst_only_paths = {"/analyst/dashboard", "/analyst/predictions", "/analyst/anomalies", "/analyst/reports", "/analyst/ml-insights", "/predict/carbon", "/predict/flood", "/predict/heatwave"}
     if request.path in analyst_only_paths or request.path.startswith("/predict/"):
         if role not in {"admin", "analyst"}:
             return redirect(url_for("unauthorized"))
         return None
 
-    # Researcher, Analyst, Admin (trends, timeline, maps except public)
     researcher_paths = {"/researcher/dashboard", "/analyst/trends", "/analyst/historical", "/analyst/realtime", "/analyst/weather-analytics", "/analyst/timeline", "/analyst/climate-timeline"}
     if request.path in researcher_paths or request.path.startswith("/maps/"):
         if request.path == "/maps/world":
-            return None  # public map
+            return None
         if role not in {"admin", "analyst", "researcher"}:
             return redirect(url_for("unauthorized"))
         return None
 
-    # Guest dashboard
     if request.path == "/guest/dashboard":
         if role not in {"admin", "analyst", "researcher", "guest"}:
             return redirect(url_for("unauthorized"))
@@ -1151,18 +1139,17 @@ def login():
         if user and _verify_password(password, user.get("password", "")):
             role = (user.get("role") or "guest").strip().lower()
             name = user.get("name") or user.get("full_name") or email
-            
-            # Completely reset session
+
             session.clear()
             session.modified = True
             session["user"] = {"email": email, "name": name, "role": role.strip().lower()}
             session["storage_mode"] = DB_BACKEND
             session.permanent = True
-            
+
             create_activity_log("User logged in", email, "Successful login")
             create_audit_log(email, "Login", "User authenticated successfully")
             logger.info("Successful login for %s (role=%s)", email, role)
-            
+
             t = str(time.time())
             if role == "admin":
                 return redirect(url_for("admin_dashboard") + "?t=" + t)
@@ -1182,20 +1169,18 @@ def register():
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
         confirm = request.form.get("confirm", "")
-        # Read the role from the form
         role = request.form.get("role", "guest").strip().lower()
-        
-        # Restrict to allowed roles (no admin via registration)
+
         allowed_roles = {"analyst", "researcher", "guest"}
         if role not in allowed_roles:
-            role = "guest"  # fallback to guest if invalid
-        
+            role = "guest"
+
         if not name or not email or not password or password != confirm:
             return render_template("auth/register.html", error_message="Please complete all fields and make sure passwords match."), 400
         if get_user_by_email(email):
             return render_template("auth/register.html", error_message="That email is already registered."), 400
-        
-        create_user(email=email, password=password, name=name, role=role)  # use the role from form
+
+        create_user(email=email, password=password, name=name, role=role)
         create_activity_log("User registered", email, "New account created")
         create_audit_log(email, "Registration", "New user registered")
         session["storage_mode"] = DB_BACKEND
@@ -1356,13 +1341,11 @@ def approve_dataset(dataset_id):
             flash("Dataset not found", "danger")
             return redirect(url_for("admin_datasets"))
 
-        # Get the file path from the dataset
         file_path = dataset.get("source")
         if not file_path:
             flash("No file associated with this dataset", "danger")
             return redirect(url_for("admin_datasets"))
 
-        # Update the database record by file path
         try:
             if DB_BACKEND == "mongodb":
                 client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
@@ -1386,7 +1369,7 @@ def approve_dataset(dataset_id):
                         ("Approved" if status == "approved" else "Rejected", notes, file_path)
                     )
                     conn.commit()
-            
+
             create_audit_log(
                 get_current_user().get("email"),
                 f"Dataset {status}",
@@ -1396,9 +1379,10 @@ def approve_dataset(dataset_id):
         except Exception as e:
             flash(f"Error updating dataset: {str(e)}", "danger")
             logger.exception("Approval error")
-        
+
         return redirect(url_for("admin_datasets"))
     return redirect(url_for("admin_datasets"))
+
 @app.route("/admin/datasets/upload", methods=["GET", "POST"])
 def admin_upload_dataset():
     if request.method == "POST":
@@ -1441,22 +1425,13 @@ def admin_upload_dataset():
     return render_template("admin/upload_dataset.html", uploads=uploads)
 
 def get_historical_data() -> Dict[str, List]:
-    """Generate realistic historical CO2 and temperature anomaly data."""
     years = list(range(1880, 2025))
-    
-    # CO2 concentration (ppm) – from ~280 to ~420
-    co2 = [280 + i * 0.5 for i in range(len(years))]  # simple linear rise
-    # Add some variability
+    co2 = [280 + i * 0.5 for i in range(len(years))]
     co2 = [round(c + (i % 5) * 0.3, 1) for i, c in enumerate(co2)]
-    
-    # Temperature anomaly (°C) relative to 1951-1980 baseline
-    # Starts around -0.2 in 1880, rises to ~1.2 in 2024
     temp = [-0.2 + i * 0.012 for i in range(len(years))]
-    # Add some natural variability
     import random
     random.seed(42)
     temp = [round(t + (random.random() - 0.5) * 0.15, 2) for t in temp]
-    
     return {"years": years, "co2": co2, "temp_anomaly": temp}
 
 @app.route("/admin/datasets/delete/<dataset_id>")
@@ -1472,7 +1447,6 @@ def delete_dataset(dataset_id):
         if source_path.exists():
             source_path.unlink(missing_ok=True)
 
-    # Delete database record by source
     if DB_BACKEND == "mongodb":
         try:
             client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
@@ -1532,7 +1506,7 @@ def admin_backups():
 def admin_settings():
     return render_template("admin/settings.html")
 
-# ===== FIXED PROFILE ROUTES (lowercase) =====
+# ===== FIXED PROFILE ROUTES =====
 @app.route("/admin/profile")
 def admin_profile():
     user = next((u for u in get_all_users() if u.get("role") == "admin"), None)
@@ -1571,7 +1545,6 @@ def analyst_dashboard():
 @app.route("/analyst/historical")
 def analyst_historical():
     historical_data = get_historical_data()
-    # Calculate correlation coefficient (simplified)
     import math
     n = len(historical_data["years"])
     co2 = historical_data["co2"]
@@ -1583,8 +1556,8 @@ def analyst_historical():
     sum_prod = sum(co2[i]*temp[i] for i in range(n))
     correlation = (n * sum_prod - sum_co2 * sum_temp) / math.sqrt((n * sum_co2_sq - sum_co2**2) * (n * sum_temp_sq - sum_temp**2))
     correlation = round(correlation, 3)
-    
-    return render_template("analyst/historical_analysis.html", 
+
+    return render_template("analyst/historical_analysis.html",
                            historical_data=historical_data,
                            correlation=correlation,
                            latest_year=historical_data["years"][-1],
@@ -1672,8 +1645,6 @@ def search_results():
 @app.route("/support")
 def support():
     return render_template("support.html")
-
-
 
 @app.route("/activity-logs")
 def activity_logs():
