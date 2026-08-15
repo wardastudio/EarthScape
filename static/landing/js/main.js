@@ -140,6 +140,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const setupScrollAnimations = () => {
+    // SKIP ALL ANIMATIONS ON MOBILE
+    if (window.innerWidth <= 768) {
+        document.querySelectorAll('.monitoring-card, .analysis-card, .ml-node, .stat-card').forEach(el => {
+            gsap.set(el, { opacity: 1, y: 0 });
+        });
+        return;
+    }
+    
             // Master 3D Scrubber Timeline – EARTH ONLY (satellite removed)
             const master3dTl = gsap.timeline({
                 scrollTrigger: {
@@ -246,20 +254,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            document.querySelectorAll('[data-parallax]').forEach((card) => {
-                if (!card) return;
-                const speed = parseFloat(card.getAttribute('data-parallax')) || 0.1;
-                gsap.to(card, {
-                    y: -50 * speed * 10,
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: true
-                    }
-                });
-            });
-        };
+// Only apply parallax on screens wider than 768px
+if (window.innerWidth > 768) {
+    document.querySelectorAll('[data-parallax]').forEach((card) => {
+        if (!card) return;
+        const speed = parseFloat(card.getAttribute('data-parallax')) || 0.1;
+        gsap.to(card, {
+            y: -50 * speed * 10,
+            scrollTrigger: {
+                trigger: card,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+    });
+}
 
         const refreshScrollTrigger = () => {
             requestAnimationFrame(() => {
