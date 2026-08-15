@@ -5,10 +5,9 @@ import os
 import secrets
 import sqlite3
 import time
-from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List
-
+from functools import lru_cache
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for, g, flash
 
 try:
@@ -822,6 +821,7 @@ def get_notifications(limit: int = 10) -> List[Dict[str, Any]]:
     return [{"title": row[0], "message": row[1], "level": row[2], "created_at": row[3]} for row in rows]
 
 # ----- Dashboard stats -----
+@lru_cache(maxsize=1)
 def get_dashboard_stats() -> Dict[str, Any]:
     df = load_dataset()
     missing_pct = round(df.isnull().mean().mean() * 100, 2)
@@ -924,7 +924,7 @@ def get_dashboard_stats() -> Dict[str, Any]:
         "models_inventory": models_inventory,
     }
 
-
+@lru_cache(maxsize=1)
 def get_chart_payload() -> Dict[str, Any]:
     df = load_dataset()
     monthly = df.groupby(df.index // 10).agg(
@@ -949,7 +949,9 @@ def get_chart_payload() -> Dict[str, Any]:
 def clear_caches() -> None:
     global _cached_df
     _cached_df = None
-    logger.info("Dataset cache cleared")
+    get_dashboard_stats.cache_clear()
+    get_chart_payload.cache_clear()
+    logger.info("All caches cleared")
 
 
 # ===== Auth Helpers =====
