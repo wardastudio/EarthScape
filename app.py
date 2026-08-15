@@ -18,7 +18,7 @@ from routes.alerts_routes import alerts_bp
 from routes.admin_routes import admin_bp
 from routes.profile_routes import profile_bp
 from routes.satellite_routes import satellite_bp
-
+_cached_df = None
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for, g, flash
 
 try:
@@ -568,14 +568,20 @@ def ensure_dataset_exists() -> None:
     df.to_csv(DATASET_PATH, index=False)
     logger.info("Created default climate dataset")
 
+
 def load_dataset() -> pd.DataFrame:
-    """Load dataset from MongoDB first, fallback to local CSV."""
+    """Load dataset from MongoDB first, fallback to local CSV. Uses global caching."""
+    global _cached_df
+    
+    # Return cached version if it exists
+    if _cached_df is not None:
+        return _cached_df
+    
     # 1. TRY MONGODB FIRST
     if DB_BACKEND == "mongodb" and MongoClient is not None:
         try:
             client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
             db = client[MONGO_DB_NAME]
-            # This must match the collection name you uploaded from climate_dataset.csv
             collection_name = "climate_dataset"
             cursor = db[collection_name].find({})
             df = pd.DataFrame(list(cursor))
@@ -584,6 +590,7 @@ def load_dataset() -> pd.DataFrame:
             if '_id' in df.columns:
                 df.drop('_id', axis=1, inplace=True)
             logger.info(f"Loaded {len(df)} rows from MongoDB collection '{collection_name}'")
+            _cached_df = df  # Cache the result
             return df
         except Exception as exc:
             logger.exception("MongoDB dataset load failed: %s", exc)
@@ -593,11 +600,13 @@ def load_dataset() -> pd.DataFrame:
     try:
         df = pd.read_csv(DATASET_PATH)
         logger.info(f"Loaded {len(df)} rows from local CSV fallback")
+        _cached_df = df  # Cache the result
         return df
     except Exception as exc:
         logger.exception("Unable to read dataset: %s", exc)
         df = build_sample_dataset()
         df.to_csv(DATASET_PATH, index=False)
+        _cached_df = df  # Cache the result
         return df
 
 
@@ -816,6 +825,7 @@ def get_notifications(limit: int = 10) -> List[Dict[str, Any]]:
     return [{"title": row[0], "message": row[1], "level": row[2], "created_at": row[3]} for row in rows]
 
 # ----- Dashboard stats -----
+@lru_cache(maxsize=1)
 def get_dashboard_stats() -> Dict[str, Any]:
     df = load_dataset()
     missing_pct = round(df.isnull().mean().mean() * 100, 2)
