@@ -848,3 +848,323 @@ section {
   .ml-flow-container { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr; }
 }
+/* ============================================================
+   MOBILE RESPONSIVE FIXES – CSS ONLY (Safe)
+   ============================================================ */
+
+/* ----- Tablets & Small Laptops (1024px and below) ----- */
+@media (max-width: 1024px) {
+  .analysis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ml-flow-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-container {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ----- Mobile Phones (768px and below) ----- */
+@media (max-width: 768px) {
+  /* Container padding */
+  .app-container {
+    padding: 0 1.25rem;
+  }
+
+  /* Navbar - Hide links, keep brand + signup */
+  .navbar-wrapper {
+    top: 0.75rem;
+    width: calc(100% - 1.5rem);
+  }
+
+  .nav-links {
+    display: none !important;
+  }
+
+  .nav-signup {
+    padding: 0.4rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  .brand-logo-text {
+    font-size: 0.85rem;
+  }
+
+  .brand-subtag {
+    display: none;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding-top: 7rem;
+    min-height: auto;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-desc {
+    font-size: 0.95rem;
+    max-width: 100%;
+  }
+
+  .hero-quote-card {
+    padding: 1.25rem;
+  }
+
+  .quote-items {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .quote-item {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .quote-item .num {
+    font-size: 0.6rem;
+    min-width: 20px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+    padding: 0.7rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Section Headers */
+  section {
+    padding: 4rem 0 2rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .section-header p {
+    font-size: 0.95rem;
+  }
+
+  /* Monitoring Cards - Stack vertically */
+  .monitoring-cards {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .monitoring-card {
+    padding: 1.25rem;
+  }
+
+  .card-icon-svg {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Analysis Cards - Stack vertically */
+  .analysis-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .analysis-card {
+    padding: 1.25rem;
+  }
+
+  /* ML Nodes - Stack vertically */
+  .ml-flow-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  .ml-node {
+    padding: 1.25rem;
+  }
+
+  .ml-node-icon-svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Stats - 2x2 grid */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.6rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  /* Dashboard */
+  .dashboard-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .dash-widget-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .dash-widget {
+    padding: 0.7rem;
+  }
+
+  .dash-widget-val {
+    font-size: 1.1rem;
+  }
+
+  .dash-map-area {
+    height: 80px;
+  }
+
+  .dashboard-features {
+    gap: 1rem;
+  }
+
+  .feature-item {
+    gap: 0.75rem;
+  }
+
+  .feature-icon-svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Pipeline */
+  .pipeline-wrapper {
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .pipeline-step {
+    padding: 0.9rem 1.1rem;
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .step-info h4 {
+    font-size: 0.85rem;
+  }
+
+  .step-info p {
+    font-size: 0.75rem;
+  }
+
+  .pipeline-arrow {
+    font-size: 1.2rem;
+  }
+
+  /* CTA Section */
+  .cta-box {
+    padding: 2rem 1.5rem;
+  }
+
+  .cta-box h2 {
+    font-size: 1.8rem;
+  }
+
+  .cta-line-sub {
+    font-size: 0.9rem;
+  }
+
+  /* Footer */
+  .footer-panel {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .subscribe-form {
+    flex-direction: column;
+  }
+
+  .subscribe-btn {
+    width: 100%;
+    height: 44px;
+  }
+
+  /* Earth positioning - center it on mobile */
+  #scene {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* ----- Small Phones (480px and below) ----- */
+@media (max-width: 480px) {
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .quote-items {
+    grid-template-columns: 1fr;
+  }
+
+  .ml-flow-container {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+
+  .brand-logo-text {
+    font-size: 0.75rem;
+  }
+
+  .nav-signup {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.8rem;
+  }
+
+  .badge-tag {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.7rem;
+  }
+}
