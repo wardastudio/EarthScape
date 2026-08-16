@@ -836,8 +836,8 @@ section {
   .nav-links { display: none; }
   .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .hero-section { padding-top: 8rem; min-height: auto; }
-  .monitoring-cards { grid-template-columns: 1fr; }
-  .analysis-grid { grid-template-columns: 1fr; }
+  .monitoring-cards { grid-template-columns: 1fr; gap: 1.5rem; }
+  .analysis-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .ml-flow-container { grid-template-columns: 1fr 1fr; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .footer-panel { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.5rem; }
