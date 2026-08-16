@@ -57,7 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // -- Three.js Canvas Initialization --
     const canvas = document.getElementById("scene");
-    if (!canvas) return;
+    if (!canvas) {
+        console.warn('[EarthScape] Canvas not found');
+        return;
+    }
 
     console.log('[EarthScape] Creating renderer from: js/main.js');
 
@@ -87,13 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const satelliteGroup = scene.satelliteGroup;
     const solarWingsGroup = scene.solarWingsGroup;
 
-    // ✅ Fix: Remove depth hacks from satellite – it should write depth to block clouds correctly
     if (satelliteGroup) {
         satelliteGroup.traverse((child) => {
             if (child.isMesh && child.material) {
                 child.material.depthTest = true;
                 child.material.depthWrite = true;
-                // Keep high renderOrder to ensure it's drawn after all other scene elements if needed
                 child.renderOrder = 999;
             }
         });
@@ -140,15 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const setupScrollAnimations = () => {
-    // SKIP ALL ANIMATIONS ON MOBILE
-    if (window.innerWidth <= 768) {
-        document.querySelectorAll('.monitoring-card, .analysis-card, .ml-node, .stat-card').forEach(el => {
-            gsap.set(el, { opacity: 1, y: 0 });
-        });
-        return;
-    }
-    
-            // Master 3D Scrubber Timeline – EARTH ONLY (satellite removed)
+            // On mobile: set visible but skip heavy animations
+            const isMobile = window.innerWidth <= 768;
+            
+            // Master 3D Scrubber Timeline – EARTH ONLY
             const master3dTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: document.body,
@@ -158,20 +154,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Earth movement – EXACTLY as original
             if (earthGroup) {
                 master3dTl
-                    .to(earthGroup.position, { x: (window.innerWidth >= 992) ? -2.2 : 0, y: -0.2, z: 0.5, duration: 1 }, 0)
+                    .to(earthGroup.position, { x: (window.innerWidth >= 992 && !isMobile) ? -2.2 : 0, y: -0.2, z: 0.5, duration: 1 }, 0)
                     .to(earthGroup.rotation, { y: Math.PI * 1.5, x: 0.2, duration: 1 }, 0)
                     .to(earthGroup.position, { x: 0, y: 0.4, z: 1.8, duration: 1.5 })
                     .to(earthGroup.rotation, { y: Math.PI * 3.0, x: -0.2, duration: 1.5 }, "<")
-                    .to(earthGroup.position, { x: (window.innerWidth >= 992) ? 2.5 : 0, y: -0.3, z: 0.2, duration: 1.5 })
+                    .to(earthGroup.position, { x: (window.innerWidth >= 992 && !isMobile) ? 2.5 : 0, y: -0.3, z: 0.2, duration: 1.5 })
                     .to(earthGroup.rotation, { y: Math.PI * 4.2, x: 0.1, duration: 1.5 }, "<")
                     .to(earthGroup.position, { x: 0, y: 0, z: -0.5, duration: 1 })
                     .to(earthGroup.rotation, { y: Math.PI * 5.0, x: 0, duration: 1 }, "<");
             }
 
-            // Section Headers & UI Animations – unchanged
+            // Skip card animations on mobile to prevent overlap
+            if (isMobile) {
+                // Just set cards visible and return
+                document.querySelectorAll('.monitoring-card, .analysis-card, .ml-node, .stat-card').forEach(el => {
+                    if (el) gsap.set(el, { opacity: 1, y: 0 });
+                });
+                return;
+            }
+
+            // Section Headers & UI Animations
             const sectionHeaders = document.querySelectorAll('.section-header h2, #section2-header .hero-heading');
             sectionHeaders.forEach((heading) => {
                 if (!heading || !document.body.contains(heading)) return;
@@ -254,22 +258,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-// Only apply parallax on screens wider than 768px
-if (window.innerWidth > 768) {
-    document.querySelectorAll('[data-parallax]').forEach((card) => {
-        if (!card) return;
-        const speed = parseFloat(card.getAttribute('data-parallax')) || 0.1;
-        gsap.to(card, {
-            y: -50 * speed * 10,
-            scrollTrigger: {
-                trigger: card,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true
+            // Only apply parallax on desktop
+            if (window.innerWidth > 768) {
+                document.querySelectorAll('[data-parallax]').forEach((card) => {
+                    if (!card) return;
+                    const speed = parseFloat(card.getAttribute('data-parallax')) || 0.1;
+                    gsap.to(card, {
+                        y: -50 * speed * 10,
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: true
+                        }
+                    });
+                });
             }
-        });
-    });
-}
+        };
 
         const refreshScrollTrigger = () => {
             requestAnimationFrame(() => {
@@ -286,29 +291,26 @@ if (window.innerWidth > 768) {
     }
 
     // ============================================================
-    // IMPROVED SATELLITE ORBIT – Closer to camera, no cloud clipping
+    // SATELLITE ORBIT
     // ============================================================
     let orbitAngle = 0;
 
-    // Start the satellite **outside** Earth’s clouds, clearly in the foreground
     if (satelliteGroup) {
-        satelliteGroup.scale.set(0.7, 0.7, 0.7);          // bigger for better visibility
-        satelliteGroup.position.set(5.0, 0.8, 4.0);       // out of cloud sphere, toward camera (+z)
+        satelliteGroup.scale.set(0.7, 0.7, 0.7);
+        satelliteGroup.position.set(5.0, 0.8, 4.0);
     }
 
     function updateSatelliteOrbit() {
         if (!satelliteGroup || !earthGroup) return;
 
-        orbitAngle += 0.002;                               // smooth rotation speed
+        orbitAngle += 0.002;
 
         const earthWorldPos = new THREE.Vector3();
         earthGroup.getWorldPosition(earthWorldPos);
 
-        // Orbit radius – keep it outside the clouds (Earth radius ≈ 3.05, clouds ≈ 3.07)
         const orbitRadius = 3.8;
-        // Ellipse that leans **toward the camera** (+z) so the satellite feels closer
         const xOffset = Math.cos(orbitAngle) * orbitRadius * 0.9;
-        const zOffset = Math.sin(orbitAngle) * orbitRadius * 0.6 + 2.5;  // positive bias
+        const zOffset = Math.sin(orbitAngle) * orbitRadius * 0.6 + 2.5;
         const yOffset = Math.sin(orbitAngle * 1.3) * 0.7;
 
         const targetWorldPos = new THREE.Vector3(
@@ -317,10 +319,8 @@ if (window.innerWidth > 768) {
             earthWorldPos.z + zOffset
         );
 
-        // Smooth motion
         satelliteGroup.position.lerp(targetWorldPos, 0.04);
 
-        // Always face Earth naturally
         const directionToEarth = new THREE.Vector3().copy(earthWorldPos).sub(satelliteGroup.position).normalize();
         const targetQuat = new THREE.Quaternion().setFromUnitVectors(
             new THREE.Vector3(0, 0, 1),
@@ -328,7 +328,6 @@ if (window.innerWidth > 768) {
         );
         satelliteGroup.quaternion.slerp(targetQuat, 0.05);
 
-        // Subtle solar panel tracking
         if (solarWingsGroup) {
             solarWingsGroup.rotation.x += 0.00015;
         }
