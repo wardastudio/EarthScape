@@ -80,16 +80,33 @@
 }
 .auth-input:focus, .auth-select:focus {
     background: rgba(15, 23, 42, 0.85) !important;
-    border-color: #7fc91f !important;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25) !important;
+    border-color: #a3e635 !important;
+    box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.25) !important;
     outline: none !important;
 }
+
+/* ===== FIX: Placeholder colors ===== */
 .auth-input::placeholder {
-    color: #64748b !important;
+    color: #94a3b8 !important;
+    opacity: 1 !important;
 }
+
+/* ===== FIX: Autofill styles ===== */
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus,
+.auth-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px rgba(15, 23, 42, 0.95) inset !important;
+    -webkit-text-fill-color: #f8fafc !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ===== FIX: Password toggle ===== */
 .password-toggle-btn {
     position: absolute;
     right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
     background: transparent;
     border: none;
     color: #94a3b8;
@@ -100,10 +117,12 @@
     align-items: center;
     justify-content: center;
     transition: color 0.2s;
+    z-index: 5;
 }
 .password-toggle-btn:hover {
     color: #f8fafc;
 }
+
 .auth-btn-emerald {
     width: 100%;
     background: linear-gradient(135deg, #7eb910 0%, #6aab15 100%);
