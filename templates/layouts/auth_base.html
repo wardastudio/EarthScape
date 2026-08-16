@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EarthScape — Climate Intelligence{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Auth Split-Screen Styles -->
+    <style>
+        /* ============================================================
+           AUTH SPLIT-SCREEN — Earth + Glass Card
+           ============================================================ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at 50% 30%, #0c1a3a 0%, #06080b 70%);
+            color: #f8fafc;
+        }
+
+        /* Three.js Canvas */
+        #auth-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Starfield overlay (if we want extra sparkle) */
+        #starfield-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(6,8,11,0.4) 100%);
+        }
+
+        /* Glow behind Earth */
+        #auth-earth-glow {
+            position: fixed;
+            top: 50%;
+            left: 35%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(163, 230, 53, 0.08) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            transition: left 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* When on login page, glow shifts right */
+        body.login-page #auth-earth-glow {
+            left: 65%;
+        }
+
+        /* Split layout */
+        .auth-split {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+            padding: 0 4rem;
+        }
+
+        .auth-left {
+            flex: 0 0 45%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 2rem;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .auth-left h1 {
+            font-size: clamp(2.5rem, 4.5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-left .tagline {
+            color: #94a3b8;
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        .auth-left .badge-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(163, 230, 53, 0.08);
+            border: 1px solid rgba(163, 230, 53, 0.2);
+            color: #a3e635;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.8rem;
+            border-radius: 9999px;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-left .dot {
+            width: 6px;
+            height: 6px;
+            background: #a3e635;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .auth-left .serif-italic {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+        }
+
+        .auth-left .lime-text {
+            color: #a3e635;
+        }
+
+        /* Auth Card Container - Right Side */
+        .auth-right {
+            flex: 0 0 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* When on login page, card shifts left slightly */
+        body.login-page .auth-right {
+            flex: 0 0 42%;
+        }
+
+        body.login-page .auth-left {
+            flex: 0 0 48%;
+        }
+
+        /* Glass Auth Card */
+        .auth-card-glass {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(8, 12, 20, 0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 2.5rem 2.5rem;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+        }
+
+        .auth-card-glass .brand-mini {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-card-glass .brand-mini .name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: #f8fafc;
+        }
+
+        .auth-card-glass .brand-mini .sub {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            font-size: 0.75rem;
+            color: #a8b8a0;
+            margin-top: 2px;
+        }
+
+        .auth-card-glass .title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.01em;
+        }
+
+        .auth-card-glass .subtitle {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-card-glass .form-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            margin-bottom: 0.3rem;
+        }
+
+        .auth-card-glass .form-control,
+        .auth-card-glass .form-select {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.65) !important;
+            border: 1px solid rgba(255, 255, 255, 0.14) !important;
+            border-radius: 10px !important;
+            color: #f8fafc !important;
+            padding: 0.65rem 0.9rem !important;
+            font-size: 0.9rem !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .auth-card-glass .form-control:focus,
+        .auth-card-glass .form-select:focus {
+            background: rgba(15, 23, 42, 0.85) !important;
+            border-color: #a3e635 !important;
+            box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.2) !important;
+            outline: none !important;
+        }
+
+        .auth-card-glass .form-control::placeholder {
+            color: #64748b !important;
+        }
+
+        .auth-card-glass .form-select option {
+            background: #0f172a !important;
+            color: #f8fafc !important;
+        }
+
+        /* Password toggle */
+        .password-toggle-btn {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 0.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+            z-index: 5;
+        }
+        .password-toggle-btn:hover {
+            color: #f8fafc;
+        }
+
+        .input-group-relative {
+            position: relative;
+        }
+
+        /* Buttons */
+        .btn-auth-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #7eb910 0%, #6aab15 100%);
+            border: 1px solid rgba(123, 185, 16, 0.4);
+            border-radius: 10px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(114, 185, 16, 0.3);
+        }
+        .btn-auth-primary:hover {
+            background: linear-gradient(135deg, #8bd334 0%, #64b910 100%);
+            box-shadow: 0 6px 20px rgba(109, 185, 16, 0.45);
+            transform: translateY(-2px);
+        }
+
+        .auth-link {
+            color: #a5f838;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .auth-link:hover {
+            color: #b8fc7d;
+            text-decoration: underline;
+        }
+
+        .auth-footer-text {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 1.2rem;
+        }
+
+        .auth-check-label {
+            font-size: 0.8rem;
+            color: #a4b894;
+            cursor: pointer;
+        }
+        .auth-check-input {
+            accent-color: #6db910;
+            cursor: pointer;
+        }
+
+        .home-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #64748b;
+            font-size: 0.8rem;
+            text-decoration: none;
+            margin-top: 1.2rem;
+            transition: color 0.2s;
+        }
+        .home-back-link:hover {
+            color: #cbd5e1;
+        }
+
+        /* Error/Success alerts */
+        .alert-glass {
+            background: rgba(244, 63, 94, 0.12) !important;
+            border: 1px solid rgba(244, 63, 94, 0.25) !important;
+            color: #fca5a5 !important;
+            border-radius: 10px !important;
+            padding: 0.5rem 1rem !important;
+            font-size: 0.85rem !important;
+        }
+        .alert-glass-success {
+            background: rgba(16, 185, 129, 0.12) !important;
+            border: 1px solid rgba(16, 185, 129, 0.25) !important;
+            color: #6ee7b7 !important;
+        }
+
+        /* Mobile: Stack vertically */
+        @media (max-width: 992px) {
+            .auth-split {
+                flex-direction: column;
+                justify-content: center;
+                padding: 2rem 1.5rem;
+                height: 100vh;
+                overflow-y: auto;
+            }
+
+            .auth-left {
+                flex: 0 0 auto !important;
+                padding-left: 0 !important;
+                text-align: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .auth-left .tagline {
+                max-width: 100%;
+                margin: 0 auto;
+            }
+
+            .auth-right {
+                flex: 0 0 auto !important;
+                width: 100%;
+                max-width: 440px;
+                margin: 0 auto;
+            }
+
+            .auth-card-glass {
+                padding: 1.8rem 1.5rem;
+            }
+
+            #auth-earth-glow {
+                display: none;
+            }
+
+            /* On mobile, Earth is smaller and centered */
+            body.login-page #auth-earth-glow,
+            body.register-page #auth-earth-glow {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-split {
+                padding: 1.5rem 1rem;
+            }
+            .auth-card-glass {
+                padding: 1.5rem 1.2rem;
+            }
+            .auth-left h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Fade transition for page switch */
+        .page-transition {
+            animation: fadeSlide 0.5s ease forwards;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0.5;
+                transform: translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+    <!-- Three.js Canvas -->
+    <canvas id="auth-scene"></canvas>
+
+    <!-- Glow behind Earth -->
+    <div id="auth-earth-glow" aria-hidden="true"></div>
+
+    <!-- Starfield overlay -->
+    <div id="starfield-overlay" aria-hidden="true"></div>
+
+    <!-- Split Layout -->
+    <div class="auth-split">
+        <!-- LEFT SIDE: Brand Message -->
+        <div class="auth-left">
+            <div class="badge-tag">
+                <span class="dot"></span> Climate Intelligence Platform
+            </div>
+            <h1>
+                {% block left_title %}
+                    Climate Insights.<br />
+                    <span class="serif-italic lime-text">Powered by AI.</span>
+                {% endblock %}
+            </h1>
+            <p class="tagline">
+                {% block left_tagline %}
+                    EarthScape transforms satellite imagery, weather stations, and environmental sensor data into AI-powered climate intelligence.
+                {% endblock %}
+            </p>
+        </div>
+
+        <!-- RIGHT SIDE: Auth Card -->
+        <div class="auth-right">
+            <div class="auth-card-glass page-transition">
+                {% block auth_card %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Earth creation script (reuse from landing) -->
+    <script>
+        // ============================================================
+        // AUTH PAGE EARTH — Reuse createEarth from landing
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('auth-scene');
+            if (!canvas) return;
+
+            console.log('[Auth] Creating Earth for auth page');
+
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                antialias: true,
+                alpha: true
+            });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 11);
+            camera.lookAt(0, 0, 0);
+
+            // Use the global createEarth function from earth.js
+            if (typeof createEarth === 'function') {
+                createEarth(scene);
+            } else {
+                console.warn('[Auth] createEarth not found!');
+                return;
+            }
+
+            const earthGroup = scene.earthGroup;
+            const cloudMesh = scene.cloudMesh;
+            const satPoints = scene.satPoints;
+            const satelliteGroup = scene.satelliteGroup;
+            const solarWingsGroup = scene.solarWingsGroup;
+
+            // Position Earth for auth page (centered, slight offset)
+            if (earthGroup) {
+                earthGroup.position.set(0, 0, 0);
+            }
+
+            // Satellite orbit
+            let orbitAngle = 0;
+            if (satelliteGroup) {
+                satelliteGroup.scale.set(0.6, 0.6, 0.6);
+                satelliteGroup.position.set(4.5, 0.5, 3.5);
+            }
+
+            function updateSatelliteOrbit() {
+                if (!satelliteGroup || !earthGroup) return;
+                orbitAngle += 0.002;
+                const earthWorldPos = new THREE.Vector3();
+                earthGroup.getWorldPosition(earthWorldPos);
+                const orbitRadius = 3.5;
+                const xOffset = Math.cos(orbitAngle) * orbitRadius * 0.9;
+                const zOffset = Math.sin(orbitAngle) * orbitRadius * 0.6 + 2.0;
+                const yOffset = Math.sin(orbitAngle * 1.3) * 0.6;
+                const targetWorldPos = new THREE.Vector3(
+                    earthWorldPos.x + xOffset,
+                    earthWorldPos.y + yOffset,
+                    earthWorldPos.z + zOffset
+                );
+                satelliteGroup.position.lerp(targetWorldPos, 0.04);
+                const directionToEarth = new THREE.Vector3().copy(earthWorldPos).sub(satelliteGroup.position).normalize();
+                const targetQuat = new THREE.Quaternion().setFromUnitVectors(
+                    new THREE.Vector3(0, 0, 1),
+                    directionToEarth
+                );
+                satelliteGroup.quaternion.slerp(targetQuat, 0.05);
+                if (solarWingsGroup) {
+                    solarWingsGroup.rotation.x += 0.00015;
+                }
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (earthGroup) earthGroup.rotation.y += 0.0012;
+                if (cloudMesh) cloudMesh.rotation.y += 0.0016;
+                if (satPoints) {
+                    satPoints.rotation.y -= 0.0008;
+                    satPoints.rotation.x += 0.0003;
+                }
+                updateSatelliteOrbit();
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            });
+        });
+    </script>
+
+    <!-- Page-specific JavaScript -->
+    {% block js_extra %}{% endblock %}
+</body>
+</html>
