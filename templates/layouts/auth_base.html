@@ -14,10 +14,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-    <!-- Auth Split-Screen Styles -->
     <style>
         /* ============================================================
-           AUTH SPLIT-SCREEN — Earth + Glass Card
+           AUTH SPLIT-SCREEN — Earth + Glass Card SWAP
            ============================================================ */
         *,
         *::before,
@@ -36,7 +35,7 @@
             color: #f8fafc;
         }
 
-        /* Three.js Canvas */
+        /* Three.js Canvas — full screen, behind everything */
         #auth-scene {
             position: fixed;
             top: 0;
@@ -47,35 +46,37 @@
             pointer-events: none;
         }
 
-        /* Starfield overlay (if we want extra sparkle) */
-        #starfield-overlay {
+        /* Blur overlay to make Earth subtle */
+        #auth-blur {
             position: fixed;
             inset: 0;
-            z-index: 0;
+            z-index: 1;
             pointer-events: none;
-            background: radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(6,8,11,0.4) 100%);
+            background: radial-gradient(ellipse at 50% 50%, rgba(6, 8, 11, 0.3) 0%, rgba(6, 8, 11, 0.7) 100%);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
         }
 
         /* Glow behind Earth */
         #auth-earth-glow {
             position: fixed;
             top: 50%;
-            left: 35%;
+            left: 25%;
             transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(163, 230, 53, 0.08) 0%, transparent 70%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(163, 230, 53, 0.06) 0%, transparent 70%);
             z-index: 0;
             pointer-events: none;
-            transition: left 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: left 0.9s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* When on login page, glow shifts right */
+        /* When on login page, glow shifts RIGHT */
         body.login-page #auth-earth-glow {
-            left: 65%;
+            left: 75%;
         }
 
-        /* Split layout */
+        /* Split layout container */
         .auth-split {
             position: relative;
             z-index: 2;
@@ -84,31 +85,43 @@
             justify-content: space-between;
             height: 100vh;
             padding: 0 4rem;
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* LEFT COLUMN: Brand + Earth content */
         .auth-left {
             flex: 0 0 45%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             padding-left: 2rem;
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 1;
+            transform: translateX(0);
         }
 
-        .auth-left h1 {
-            font-size: clamp(2.5rem, 4.5vw, 4rem);
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 0.5rem;
+        /* When on login page, left column pushes out (or becomes the form) */
+        body.login-page .auth-left {
+            flex: 0 0 40%;
+            opacity: 0.6;
+            transform: translateX(-20px);
         }
 
-        .auth-left .tagline {
-            color: #94a3b8;
-            font-size: clamp(1rem, 1.2vw, 1.2rem);
-            max-width: 400px;
-            line-height: 1.6;
+        /* RIGHT COLUMN: Auth Card */
+        .auth-right {
+            flex: 0 0 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* When on login page, right column expands slightly */
+        body.login-page .auth-right {
+            flex: 0 0 45%;
+        }
+
+        /* ===== BRAND TEXT (Left side) ===== */
         .auth-left .badge-tag {
             display: inline-flex;
             align-items: center;
@@ -123,6 +136,7 @@
             padding: 0.3rem 0.8rem;
             border-radius: 9999px;
             margin-bottom: 1.5rem;
+            width: fit-content;
         }
 
         .auth-left .dot {
@@ -140,6 +154,20 @@
             50% { opacity: 0.4; }
         }
 
+        .auth-left h1 {
+            font-size: clamp(2.5rem, 4.5vw, 3.8rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-left .tagline {
+            color: #94a3b8;
+            font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+            max-width: 420px;
+            line-height: 1.6;
+        }
+
         .auth-left .serif-italic {
             font-family: 'Playfair Display', Georgia, serif;
             font-style: italic;
@@ -149,28 +177,10 @@
             color: #a3e635;
         }
 
-        /* Auth Card Container - Right Side */
-        .auth-right {
-            flex: 0 0 40%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* When on login page, card shifts left slightly */
-        body.login-page .auth-right {
-            flex: 0 0 42%;
-        }
-
-        body.login-page .auth-left {
-            flex: 0 0 48%;
-        }
-
-        /* Glass Auth Card */
+        /* ===== GLASS AUTH CARD (Right side by default) ===== */
         .auth-card-glass {
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
             background: rgba(8, 12, 20, 0.82);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
@@ -178,7 +188,12 @@
             border-radius: 20px;
             padding: 2.5rem 2.5rem;
             box-shadow: 0 25px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+            transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+        }
+
+        /* When on login page, card shifts slightly */
+        body.login-page .auth-card-glass {
+            transform: translateX(10px);
         }
 
         .auth-card-glass .brand-mini {
@@ -353,7 +368,23 @@
             color: #6ee7b7 !important;
         }
 
-        /* Mobile: Stack vertically */
+        /* ===== FADE-IN ANIMATION FOR CARD ===== */
+        .page-transition {
+            animation: fadeSlide 0.6s ease forwards;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0.3;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== MOBILE: STACK VERTICALLY ===== */
         @media (max-width: 992px) {
             .auth-split {
                 flex-direction: column;
@@ -368,6 +399,12 @@
                 padding-left: 0 !important;
                 text-align: center;
                 margin-bottom: 1.5rem;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+
+            .auth-left .badge-tag {
+                margin: 0 auto 1.5rem;
             }
 
             .auth-left .tagline {
@@ -378,22 +415,31 @@
             .auth-right {
                 flex: 0 0 auto !important;
                 width: 100%;
-                max-width: 440px;
+                max-width: 420px;
                 margin: 0 auto;
             }
 
             .auth-card-glass {
                 padding: 1.8rem 1.5rem;
+                transform: none !important;
             }
 
             #auth-earth-glow {
                 display: none;
             }
 
-            /* On mobile, Earth is smaller and centered */
-            body.login-page #auth-earth-glow,
-            body.register-page #auth-earth-glow {
-                display: none;
+            #auth-blur {
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+
+            body.login-page .auth-left {
+                opacity: 1 !important;
+                transform: none !important;
+            }
+
+            body.login-page .auth-right {
+                flex: 0 0 auto !important;
             }
         }
 
@@ -408,22 +454,6 @@
                 font-size: 1.8rem;
             }
         }
-
-        /* Fade transition for page switch */
-        .page-transition {
-            animation: fadeSlide 0.5s ease forwards;
-        }
-
-        @keyframes fadeSlide {
-            0% {
-                opacity: 0.5;
-                transform: translateY(8px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 
     {% block head_extra %}{% endblock %}
@@ -433,15 +463,15 @@
     <!-- Three.js Canvas -->
     <canvas id="auth-scene"></canvas>
 
+    <!-- Blur overlay to make Earth subtle -->
+    <div id="auth-blur" aria-hidden="true"></div>
+
     <!-- Glow behind Earth -->
     <div id="auth-earth-glow" aria-hidden="true"></div>
 
-    <!-- Starfield overlay -->
-    <div id="starfield-overlay" aria-hidden="true"></div>
-
     <!-- Split Layout -->
     <div class="auth-split">
-        <!-- LEFT SIDE: Brand Message -->
+        <!-- LEFT SIDE: Brand Message (Earth on left, text on left) -->
         <div class="auth-left">
             <div class="badge-tag">
                 <span class="dot"></span> Climate Intelligence Platform
@@ -471,10 +501,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Earth creation script (reuse from landing) -->
+    <!-- Earth creation script -->
     <script>
         // ============================================================
-        // AUTH PAGE EARTH — Reuse createEarth from landing
+        // AUTH PAGE EARTH — Subtle, behind blur
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             const canvas = document.getElementById('auth-scene');
@@ -495,11 +525,11 @@
             camera.position.set(0, 0, 11);
             camera.lookAt(0, 0, 0);
 
-            // Use the global createEarth function from earth.js
+            // Use global createEarth
             if (typeof createEarth === 'function') {
                 createEarth(scene);
             } else {
-                console.warn('[Auth] createEarth not found!');
+                console.warn('[Auth] createEarth not found! Make sure earth.js loads before this.');
                 return;
             }
 
@@ -509,7 +539,7 @@
             const satelliteGroup = scene.satelliteGroup;
             const solarWingsGroup = scene.solarWingsGroup;
 
-            // Position Earth for auth page (centered, slight offset)
+            // Position Earth slightly left for register, will shift on login
             if (earthGroup) {
                 earthGroup.position.set(0, 0, 0);
             }
